@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from "react-router-dom";
 import io from "socket.io-client";
-
-let socket;
-
+const socket = io.connect('http://localhost:3001');
+// let socket
 function Deception(props) {
 
   const [user, setUser] = useState('');
@@ -14,18 +13,22 @@ function Deception(props) {
   const { roomNumber } = useParams();
 
 
-  const ENDPOINT = "http://ec2-13-125-172-64.ap-northeast-2.compute.amazonaws.com:3000/";
+  // const ENDPOINT = "http://ec2-13-125-172-64.ap-northeast-2.compute.amazonaws.com:3000/";
+//const ENDPOINT = "http://localhost:3001/";
+  
+
 
   useEffect(() => {
     setUser(props.user.id);
     setRoom(roomNumber);
     console.log(user, room);
 
-    socket = io(ENDPOINT);
+    // socket = io.connect(ENDPOINT);
+    console.log(socket)
 
-    socket.emit("connection", (e) => {
-      console.log(e);
-    });
+    // socket.emit("connection", (e) => {
+    //   console.log(e);
+    // });
 
     socket.emit("joindeception", {room});
     
