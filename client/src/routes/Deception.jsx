@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from "react-router-dom";
 import io from "socket.io-client";
+<<<<<<< HEAD
 
 const ENDPOINT = 'http://localhost:5000';
 const socket = io(ENDPOINT);
 
+=======
+const socket = io.connect('http://localhost:3001');
+// let socket
+>>>>>>> 6d8f13051b49e643d4ddd371e5b827712d314c52
 function Deception(props) {
 
   const [user, setUser] = useState('');
@@ -13,12 +18,31 @@ function Deception(props) {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([{msg_sender: "형진", msg_content: "hi"}, {msg_sender: "형진", msg_content: "hello"}]);
   const { roomNumber } = useParams();
+<<<<<<< HEAD
   
+=======
+
+
+  // const ENDPOINT = "http://ec2-13-125-172-64.ap-northeast-2.compute.amazonaws.com:3000/";
+//const ENDPOINT = "http://localhost:3001/";
+  
+
+
+>>>>>>> 6d8f13051b49e643d4ddd371e5b827712d314c52
   useEffect(() => {
     setUser(props.user.id);
     setRoom(roomNumber);
 
+<<<<<<< HEAD
     console.log(socket)
+=======
+    // socket = io.connect(ENDPOINT);
+    console.log(socket)
+
+    // socket.emit("connection", (e) => {
+    //   console.log(e);
+    // });
+>>>>>>> 6d8f13051b49e643d4ddd371e5b827712d314c52
 
     socket.emit("joindeception", {room});
     

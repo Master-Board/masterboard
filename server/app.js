@@ -2,6 +2,7 @@ require("dotenv").config()
 const express = require("express")
 const http = require("http")
 const app = express()
+<<<<<<< HEAD
 app.set('port', process.env.POR);
 const server = http.createServer(app)
 const PORT = process.env.PORT
@@ -13,6 +14,12 @@ const io = require('socket.io')(server, {
 })
 app.use(express.urlencoded({extended: true}))
 const moment = require('moment')
+=======
+app.set('port', process.env.PORT);
+const server = http.createServer(app)
+const PORT = process.env.PORT
+app.use(express.urlencoded({extended: true}))
+>>>>>>> 6d8f13051b49e643d4ddd371e5b827712d314c52
 // const api = require('./apis/apis')
 // app.use("/", api)
 const cors = require("cors")
@@ -21,6 +28,7 @@ app.use(cors({
     origin: 'localhost:3000', // 출처 허용 옵션
     credential: 'true' // 사용자 인증이 필요한 리소스(쿠키 ..등) 접근
 }));
+<<<<<<< HEAD
 function init_cluedeck(){
     let clue_deck = {}
     clue_deck[0] = '에어컨'
@@ -124,32 +132,13 @@ io.on('connection',(socket) => {
         let room = data.room_id
         let card_count = data.card_count
     })
+=======
+>>>>>>> 6d8f13051b49e643d4ddd371e5b827712d314c52
 
-    socket.on('shuffledeck',(data) => {
-        let room = data.room_id
 
-    })
+const SocketIO = require('./socket/socket.js')
+SocketIO(server)
 
-    socket.on('guessAnswer',(data) =>{
-        let room = data.room_id
-        let guess_murderer = data.murderer
-        let guess_means = data.means
-        let guess_clue = data.clue
-        let anwer = ''
-        if (guess_murderer == murderer && guess_means == murder_means && guess_clue == murder_clue) {
-            anwer = 'right answer'
-            socket.to(room).emit('guessAnswer', {
-                anwer
-            })
-        }
-        else {
-            anwer = 'wrong anwer'
-            socket.to(room).emit('guessAnswer', {
-                anwer
-            })
-        }
-    })
-})
 
 // const SocketIO = require('./socket/socket.js')
 // SocketIO(server)
