@@ -2,16 +2,23 @@ require("dotenv").config()
 const express = require("express")
 const http = require("http")
 const app = express()
+app.set('port', process.env.POR);
 const server = http.createServer(app)
 const PORT = process.env.PORT
-const io = require('socket.io')(server)
+const io = require('socket.io')(server, {
+    cors: {
+        origin: "*",
+        credential:true
+    }
+})
 app.use(express.urlencoded({extended: true}))
-
+const moment = require('moment')
 // const api = require('./apis/apis')
 // app.use("/", api)
 const cors = require("cors")
 app.use(cors({
-    origin: 'ec2-13-125-172-64.ap-northeast-2.compute.amazonaws.com:3000', // 출처 허용 옵션
+    //origin: 'ec2-13-125-172-64.ap-northeast-2.compute.amazonaws.com:3000', // 출처 허용 옵션
+    origin: 'localhost:3000', // 출처 허용 옵션
     credential: 'true' // 사용자 인증이 필요한 리소스(쿠키 ..등) 접근
 }));
 function init_cluedeck(){
@@ -72,13 +79,15 @@ io.on('connection',(socket) => {
     let score
     
     socket.on('chatting', (data) => {
-        let msg_time = moment(new Date()).format("YYYY-MM-DD hh:mm:ss")
-        const {msg_sender, msg_content, room} = data;
-        console.log(data)
+        // let msg_time = moment(new Date()).format("YYYY-MM-DD hh:mm:ss")
+        // const {msg_sender, msg_content, room} = data.message;
+        const msg_sender = data.message.name;
+        const msg_content = data.message.message;
+        const room = data.message.room;
+        console.log(data.message)
         socket.to(room).emit('chatting',{
-            msg_sender,
-            msg_content,
-            msg_time,
+            msg_sender: msg_sender,
+            msg_content: msg_content
         })
     })    
 
@@ -93,7 +102,8 @@ io.on('connection',(socket) => {
     })
 
     socket.on('joindeception',(data) => {
-        let room = data.room_id        
+        console.log(data)
+        let room = data.room        
         socket.join(room)
     })
 
@@ -140,5 +150,9 @@ io.on('connection',(socket) => {
         }
     })
 })
+
+// const SocketIO = require('./socket/socket.js')
+// SocketIO(server)
+
 
 server.listen(PORT, () => console.log(`server is runnig ${PORT}`))

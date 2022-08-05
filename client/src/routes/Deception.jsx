@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams } from "react-router-dom";
 import io from "socket.io-client";
 
-let socket;
+const ENDPOINT = 'http://localhost:5000';
+const socket = io(ENDPOINT);
 
 function Deception(props) {
 
@@ -10,35 +11,27 @@ function Deception(props) {
   const [users, setUsers] = useState('');
   const [room, setRoom] = useState('');
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([{name: "형진", message: "hi"}, {name: "형진", message: "hello"}]);
+  const [messages, setMessages] = useState([{msg_sender: "형진", msg_content: "hi"}, {msg_sender: "형진", msg_content: "hello"}]);
   const { roomNumber } = useParams();
-
-
-  const ENDPOINT = "http://localhost:3000";
-
+  
   useEffect(() => {
     setUser(props.user.id);
     setRoom(roomNumber);
-    console.log(user, room);
 
-    socket = io(ENDPOINT);
-
-    socket.emit("connection", (e) => {
-      console.log(e);
-    });
+    console.log(socket)
 
     socket.emit("joindeception", {room});
     
   }, []);
 
-  useEffect(() => {
+  // useEffect(() => {
     // 메세지 받기
-    socket.on("chatting", (message) => {
-      console.log(message);
-      setMessages([...messages, message]);
+    socket.on("chatting", (data) => {
+      console.log(data);
+      setMessages([...messages, data]);
     });
 
-  }, []);
+  // }, [messages]);
 
   const sendMessage = () => {
     if(message) {
@@ -48,9 +41,7 @@ function Deception(props) {
   };
 
   const Disconnect = () => {
-    socket.emit("disconnect", (user) => {
-      console.log('user disconnected');
-    })
+    socket.disconnect();
   }
 
   return (
@@ -60,17 +51,15 @@ function Deception(props) {
         <div style={{width: "300px", height: "600px", border: "2px solid #111"}}>
           <div style={{backgroundColor: "#eee"}}>Room : {room}</div>
           <div className="messages" style={{width: "290px", height: "540px", border: "1px solid #111"}}>
-            {messages.map((message, i) => (
+            {messages.map((data, i) => (
               <div key={i} >
-                <div>{message.name} : {message.message}</div>
+                <div>{data.msg_sender} : {data.msg_content}</div>
               </div>
             ))}
           </div>
-          <input type="text" placeholder="메세지를 입력하세요" onChange={(e)=>setMessage({name: user, message: e.target.value})} />
+          <input type="text" placeholder="메세지를 입력하세요" onChange={(e)=>setMessage({name: user, message: e.target.value, room: room})} />
           <button onClick={(e)=>{
             e.preventDefault();
-            console.log(message);
-            setMessage({name: user, message: e.target.value});
             sendMessage();
           }}>send</button>
         </div>
