@@ -18,20 +18,21 @@ function Deception(props) {
     setUser(props.user.id);
     setRoom(roomNumber);
 
-    console.log(socket)
+    console.log(user, room);
+    console.log(socket);
 
     socket.emit("joindeception", {room});
     
-  }, []);
+  }, [room]);
 
-  // useEffect(() => {
+  useEffect(() => {
     // 메세지 받기
     socket.on("chatting", (data) => {
       console.log(data);
       setMessages([...messages, data]);
     });
 
-  // }, [messages]);
+  }, [socket]);
 
   const sendMessage = () => {
     if(message) {

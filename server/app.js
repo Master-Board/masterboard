@@ -2,7 +2,7 @@ require("dotenv").config()
 const express = require("express")
 const http = require("http")
 const app = express()
-app.set('port', process.env.POR);
+app.set('port', process.env.PORT);
 const server = http.createServer(app)
 const PORT = process.env.PORT
 const io = require('socket.io')(server, {
@@ -92,17 +92,16 @@ io.on('connection',(socket) => {
     })    
 
     socket.on('joinparade', (data) => {
-        let room = data.room_id
+        let room = data.room
         socket.join(room)
     })
 
     socket.on('leaveparade',(data) => {
-        let room = data.room_id
+        let room = data.room
         socket.leave(room)
     })
 
     socket.on('joindeception',(data) => {
-        console.log(data)
         let room = data.room        
         socket.join(room)
     })

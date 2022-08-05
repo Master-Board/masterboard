@@ -43,14 +43,11 @@ function Row(props) {
       index = 3;
     }
     const games = props.games;
-    console.log(games);
-    console.log(games[index].rooms);
     const newRoom = {
       number: roomNumber * 1,
       people: 1,
     };
     games[index].rooms.push(newRoom);
-    console.log(games[index].rooms);
   };
 
   return (
