@@ -11,6 +11,7 @@ function Deception(props) {
   const [users, setUsers] = useState('');
   const [room, setRoom] = useState('');
   const [message, setMessage] = useState('');
+  const [text, setText] = useState('');
   const [messages, setMessages] = useState([{name: "형진", message: "hi"}, {name: "형진", message: "hello"}]);
   const { roomNumber } = useParams();
   
@@ -33,11 +34,13 @@ function Deception(props) {
 
   }, [messages]);
 
+  useEffect(() => {
+    setMessage({name: user, message: text, room: room});
+  }, [text])
+
   const sendMessage = () => {
-    if(message) {
-      console.log(message);
       socket.emit("chatting", {message});
-    }
+      setText('');
   };
 
   const Disconnect = () => {
@@ -57,9 +60,8 @@ function Deception(props) {
               </div>
             ))}
           </div>
-          <input type="text" placeholder="메세지를 입력하세요" onChange={(e)=>setMessage({name: user, message: e.target.value, room: room})} />
+          <input type="text" placeholder="메세지를 입력하세요" onChange={(e)=>setText(e.target.value)} value={text} />
           <button onClick={(e)=>{
-            e.preventDefault();
             sendMessage();
           }}>send</button>
         </div>
