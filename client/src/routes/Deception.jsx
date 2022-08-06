@@ -11,7 +11,7 @@ function Deception(props) {
   const [users, setUsers] = useState('');
   const [room, setRoom] = useState('');
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([{msg_sender: "형진", msg_content: "hi"}, {msg_sender: "형진", msg_content: "hello"}]);
+  const [messages, setMessages] = useState([{name: "형진", message: "hi"}, {name: "형진", message: "hello"}]);
   const { roomNumber } = useParams();
   
   useEffect(() => {
@@ -28,11 +28,10 @@ function Deception(props) {
   useEffect(() => {
     // 메세지 받기
     socket.on("chatting", (data) => {
-      console.log(data);
       setMessages([...messages, data]);
     });
 
-  }, [socket]);
+  }, [messages]);
 
   const sendMessage = () => {
     if(message) {
@@ -54,7 +53,7 @@ function Deception(props) {
           <div className="messages" style={{width: "290px", height: "540px", border: "1px solid #111"}}>
             {messages.map((data, i) => (
               <div key={i} >
-                <div>{data.msg_sender} : {data.msg_content}</div>
+                <div>{data.name} : {data.message}</div>
               </div>
             ))}
           </div>

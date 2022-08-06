@@ -73,35 +73,52 @@ module.exports = (server) => {
 
         socket.on('chatting', (data) => {
             let msg_time = moment(new Date()).format("YYYY-MM-DD hh:mm:ss")
-            const {msg_sender, msg_content, room} = data;
-            console.log(data)
-            socket.to(room).emit('chatting',{
-                msg_sender,
-                msg_content,
+            const {name, message, room} = data.message;
+            console.log('n: ',name)
+            console.log('m: ',message)
+            console.log('r: ',room)
+
+            socket.emit('chatting',{
+                name,
+                message,
                 msg_time,
             })
+            console.log('emit 완료 ~!')
         })    
     
         socket.on('joinparade', (data) => {
-            let room = data.room_id
+            let room = data.room
             socket.join(room)
         })
     
         socket.on('leaveparade',(data) => {
-            let room = data.room_id
-            socket.leave(room)
+            let room = data.room
+            if (data.room != '') {
+                socket.leave(room)
+                console.log(room+'번 방 join 완료!')
+            }
+            else{
+                console.log('value is empty!')
+            }
         })
     
         socket.on('joindeception',(data) => {
-            let room = data.room_id        
-            socket.join(room)
+            let room = data.room    
+            console.log('data: ',data)  
+            if (data.room != '') {
+                socket.join(room)
+                console.log(room+'번 방 join 완료!')
+            }
+            else{
+                console.log('value is empty!')
+            }
         })
     
         socket.on('leavedeception',(data) => {        
         })
     
         socket.on('initdeck',(data) => {
-            let room = data.room_id
+            let room = data.room
             clue_deck = init_cluedeck()
             means_deck = init_meansdeck()
             socket.to(room).emit('initdeck', {
@@ -111,17 +128,17 @@ module.exports = (server) => {
         })
     
         socket.on('drawdeck',(data) => {
-            let room = data.room_id
+            let room = data.room
             let card_count = data.card_count
         })
     
         socket.on('shuffledeck',(data) => {
-            let room = data.room_id
+            let room = data.room
     
         })
     
         socket.on('guessAnswer',(data) =>{
-            let room = data.room_id
+            let room = data.room
             let guess_murderer = data.murderer
             let guess_means = data.means
             let guess_clue = data.clue
