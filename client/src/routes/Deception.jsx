@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from "react-router-dom";
 import io from "socket.io-client";
+import DeceptionUser from './DeceptionUser';
 
 const ENDPOINT = 'http://localhost:5000';
 const socket = io(ENDPOINT);
@@ -54,30 +55,44 @@ function Deception(props) {
         {user}님 어서오세요! #{room} 디셉션 방입니다
         <button onClick={()=>setChatting(!chatting)}>채팅</button>
         <button onClick={Disconnect}><Link to="/mainpage">나가기</Link></button>
-        {chatting === true ? 
-          <div style={{width: "300px", height: "600px", border: "2px solid #111"}}>
-          <div style={{backgroundColor: "#eee"}}>Room : {room}</div>
-          <div className="messages" style={{width: "290px", height: "540px", border: "1px solid #111", overflow: "scroll"}}>
-            {messages.map((data, i) => (
-              <div key={i} >
-                <div>{data.name} : {data.message}</div>
+        <body style={{display: "flex"}}>
+          {chatting === true ? 
+            <div style={{width: "300px", height: "600px", border: "2px solid #111"}}>
+              <div style={{backgroundColor: "#eee"}}>Room : {room}</div>
+              <div className="messages" style={{width: "290px", height: "540px", border: "1px solid #111", overflow: "scroll"}}>
+                {messages.map((data, i) => (
+                  <div key={i} >
+                    <div>{data.name} : {data.message}</div>
+                  </div>
+                ))}
               </div>
-            ))}
+              <input type="text" placeholder="메세지를 입력하세요" onChange={(e)=>setText(e.target.value)} value={text} onKeyPress={(e)=>(e.key === "Enter" ? sendMessage() : null)} />
+              <button onClick={()=>sendMessage()}>send</button>
+            </div> : null}
+          <div className='gameboard' style={{textAlign: "center", width: "1540px", height: "690px"}}>
+            <div className='top' style={{display: "flex"}}>
+              <DeceptionUser/>
+              <DeceptionUser/>
+              <DeceptionUser/>
+              <DeceptionUser/>
+              <DeceptionUser/>
+            </div>
+            <div className='middle' style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+              <DeceptionUser/>
+              <div style={{width: "800px", height: "250px", margin: "0px 55px", border: "1px solid #111"}}>
+                share
+              </div>
+              <DeceptionUser/>
+            </div>
+            <div className='bottom' style={{display: "flex"}}>
+              <DeceptionUser/>
+              <DeceptionUser/>
+              <DeceptionUser/>
+              <DeceptionUser/>
+              <DeceptionUser/>
+            </div>
           </div>
-          <input type="text" placeholder="메세지를 입력하세요" onChange={(e)=>setText(e.target.value)} value={text} onKeyPress={(e)=>(e.key === "Enter" ? sendMessage() : null)} />
-          <button onClick={()=>sendMessage()}>send</button>
-        </div> : null}
-        <div className='gameboard'>
-          <div className='top'>
-            
-          </div>
-          <div className='middle'>
-
-          </div>
-          <div className='bottom'>
-
-          </div>
-        </div>
+        </body>
       </div>
     );
   }
