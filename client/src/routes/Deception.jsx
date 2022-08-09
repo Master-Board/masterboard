@@ -55,9 +55,9 @@ function Deception(props) {
         {user}님 어서오세요! #{room} 디셉션 방입니다
         <button onClick={()=>setChatting(!chatting)}>채팅</button>
         <button onClick={Disconnect}><Link to="/mainpage">나가기</Link></button>
-        <body style={{display: "flex"}}>
+        <body style={{display: "flex", position: "relative"}}>
           {chatting === true ? 
-            <div style={{width: "300px", height: "600px", border: "2px solid #111"}}>
+            <div style={{width: "300px", height: "600px", border: "2px solid #111", position: "absolute", background: "#fff"}}>
               <div style={{backgroundColor: "#eee"}}>Room : {room}</div>
               <div className="messages" style={{width: "290px", height: "540px", border: "1px solid #111", overflow: "scroll"}}>
                 {messages.map((data, i) => (
