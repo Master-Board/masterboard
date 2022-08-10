@@ -83,25 +83,25 @@ function Deception(props) {
             </div> : null}
           <div className='gameboard' style={{textAlign: "center", width: "1540px", height: "690px"}}>
             <div className='top' style={{display: "flex"}}>
-              <DeceptionUser user={users[(userIndex+6)%(users.length)]}/>
+              {users.length<7? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+6)%(users.length)]}/>}
               <DeceptionUser user={users[(userIndex+1)%(users.length)]}/>
               <DeceptionUser user={users[(userIndex+2)%(users.length)]}/>
               <DeceptionUser user={users[(userIndex+3)%(users.length)]}/>
-              <DeceptionUser user={users[(userIndex+7)%(users.length)]}/>
+              {users.length<8? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+7)%(users.length)]}/>}
             </div>
             <div className='middle' style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
-              <DeceptionUser user={users[(userIndex+4)%(users.length)]}/>
+              {users.length<5? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+4)%(users.length)]}/>}
               <div style={{width: "800px", height: "250px", margin: "0px 55px", border: "1px solid #111"}}>
                 share
               </div>
-              <DeceptionUser user={users[(userIndex+5)%(users.length)]}/>
+              {users.length<6? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+5)%(users.length)]}/>}
             </div>
             <div className='bottom' style={{display: "flex"}}>
-              <DeceptionUser user={users[(userIndex+8)%(users.length)]}/>
-              <DeceptionUser user={users[(userIndex+10)%(users.length)]}/>
+              {users.length<9? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+8)%(users.length)]}/>}
+              {users.length<11? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+10)%(users.length)]}/>}
               <DeceptionUser user={users[userIndex]}/>
-              <DeceptionUser user={users[(userIndex+11)%(users.length)]}/>
-              <DeceptionUser user={users[(userIndex+9)%(users.length)]}/>
+              {users.length<12? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+11)%(users.length)]}/>}
+              {users.length<10? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+9)%(users.length)]}/>}
             </div>
           </div>
         </body>
