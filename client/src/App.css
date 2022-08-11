@@ -1,5 +1,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&family=Roboto:wght@400;700&display=swap');
 
+.deceptionCard:hover{
+  background-color: #ddd;
+}
+
+.deceptionCard:active{
+  background-color: #999;
+}
+
+.clicked{
+  background-image: url(../public/img/x.png);
+  background-size: 55px 60px;
+}
+
+.deceptionCard{
+  width: 60px;
+  height: 60px;
+  border: 1px solid #000;
+  margin: 5px 5px;
+  line-height: 55px;
+}
+
 .login{
   width: 500px;
   margin: 100px auto auto auto;

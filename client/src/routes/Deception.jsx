@@ -17,7 +17,7 @@ function Deception(props) {
   const { roomNumber } = useParams();
   let userIndex=1;
 
-  const [users, setUsers] = useState([{name: "창현", blue: [12, 42, 53, 13], red: [2, 43, 25, 83]}, {name: "형진", blue: [54, 62, 11, 40], red: [1, 3, 4, 5]}, {name: "민호", blue: [6, 7, 8, 9], red: [6, 7, 8, 9]}, {name: "철", blue: [10, 11, 12, 13], red: [14, 15, 16, 17]}]);
+  const [users, setUsers] = useState([{name: "창현", job: null, blue: [12, 42, 53, 13], red: [2, 43, 25, 83]}, {name: "형진", job: null, blue: [54, 62, 11, 40], red: [1, 3, 4, 5]}, {name: "민호", job: null, blue: [6, 7, 8, 9], red: [6, 7, 8, 9]}, {name: "철", job: null, blue: [10, 11, 12, 13], red: [14, 15, 16, 17]}]);
   
   useEffect(() => {
     setUser(props.user.id);
@@ -66,6 +66,7 @@ function Deception(props) {
       <div id="deception" style={{background: 'url("img/background.webp")', backgroundSize: 'cover', width: '100%', height: '100%'}}>
         {user}님 어서오세요! #{room} 디셉션 방입니다
         <button onClick={()=>setChatting(!chatting)}>채팅</button>
+        <button>준비</button>
         <button onClick={Disconnect}><Link to="/mainpage">나가기</Link></button>
         <body style={{display: "flex", position: "relative"}}>
           {chatting === true ? 
