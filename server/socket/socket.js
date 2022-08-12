@@ -212,7 +212,7 @@ module.exports = (server) => {
         socket.on('deceptionJoin',(data) => {
             let room = data.room    
             console.log('data: ',data)
-            let player_form = {socketId: '', name: '', job: 'detective', clue: [], means: []}
+            let player_form = {socketId: '', name: '', ready: false, job: 'detective', clue: [], means: []}
             if (data.room != '') {
                 socket.join(room)
 
@@ -232,7 +232,33 @@ module.exports = (server) => {
         })
 
         socket.on('deceptionReady',(data) => {
-
+            const {player, room} = data
+            p = {a:{},b:{},c:{}}
+            if(deception_player[deception_player.indexof(player)].ready == true) {
+                deception_player[deception_player.indexof(player)].ready = false
+            } 
+            else{
+                deception_player[deception_player.indexof(player)].ready == false
+            }
+            let not_ready = 0
+            for(let i=0;i<deception_player.length;i++){
+                if(deception_player[i].ready==false){
+                    not_ready += 1
+                }
+            }
+            let ready
+            if(not_ready == 0) { //모두 준비 완료되면
+                ready = true
+                socket.to(room).emit('deceptionReady',{
+                    ready
+                })
+            }
+            else{ //한명이라도 준비가 안되면
+                ready = false
+                socket.to(room).emit('deceptionReady',{
+                    ready
+                })
+            }
         })
     
         socket.on('deceptionLeave',(data) => {   
