@@ -1,5 +1,13 @@
 const Socketio = require('socket.io')
 const moment = require('moment')
+let deception_player
+let deception_clue_deck //deception의 단서카드 정보 ex) 사용자의 단서카드 값 = 4라면 clue_deck의 5번째 정보를 참조하면 됨.
+let deception_means_deck //deception 수단카드 정보. 위와 마찬가지.
+let deception_clue // deception에 실제 사용되는 단서카드
+let deception_means // deception에 실제 사용되는 단서카드
+let deception_murderer //살인자 플레이어 닉네임 혹은 번호
+let deception_murder_means // 살인자 수단카드 번호
+let deception_murder_clue //살인자 단서카드 번호
 function swap(a,b) {
     let tmp = a
     a = b
@@ -70,7 +78,7 @@ function deception_init_game(c,m) { // 처음 게임 시작할 때 덱 구성
     clue = deception_shuffle(clue)
     means = deception_init_card(m.length)
     means = deception_shuffle(means)
-    return clue,means
+    return [clue,means]
 }
 function deception_shuffle(deck) {    //실제 사용 덱 숫자 셔플
     for(let i=0; i<deck.length; i++){
@@ -95,31 +103,39 @@ function deception_draw_card(deck,card_count) {
         for(let i=0;i<card_count;i++){
             card.push(deck.pop())
         }
-        return card,deck
+        return [card,deck]
     }
 }
-function deception_decide_role(personnel,player) {//랜덤으로 역할 정하기
+function deception_decide_role(personnel,deception_player) {//랜덤으로 역할 정하기
     let randnum
     let god //법의학자, 1명
     let murderer // 살인자, 1명
     let witness //목격자
     let confederate = [] //공범자
+    let player = []
+    for(let i=0;i<personnel;i++){
+        player.push(deception_player[i].socketId)//**나중에 닉네임이나 이름 등으로 변경할 것!
+    }
     randnum = Math.random()*personnel
-    god = player[randnum]
+    god = player[randnum].job
     player.splice(randnum,1)
+    deception_player[randnum].job = 'god'
     personnel-=1
     randnum = Math.random()*personnel
     murderer = player[randnum]
+    deception_player[randnum].job = 'murderer'
     player.splice(randnum,1)
     personnel -=1
     if(personnel>3) {//총 인원 6명 이상
         randnum = Math.random()*personnel
         witness = player[randnum]
+        deception_player[randnum].job = 'witness'
         player.splice(randnum,1)
         personnel-=1    
         if(personnel>=3) {//위에서 3명을 빼고 남은 인원 3 총 인원 6~7 / 공범 1
             randnum = Math.random()*personnel
             confederate.push(player[randnum])
+            deception_player[randnum].job = 'confederate'
             player.splice(randnum,1)
             personnel-=1
         }
@@ -127,6 +143,7 @@ function deception_decide_role(personnel,player) {//랜덤으로 역할 정하�
             for(let i=0;i<2;i++){
                 randnum = Math.random()*personnel
                 confederate.push(player[randnum])
+                deception_player[randnum].job = 'confederate'
                 player.splice(randnum,1)
                 personnel-=1
             }
@@ -135,6 +152,7 @@ function deception_decide_role(personnel,player) {//랜덤으로 역할 정하�
             for(let i=0;i<3;i++){
                 randnum = Math.random()*personnel
                 confederate.push(player[randnum])
+                deception_player[randnum].job = 'confederate'
                 player.splice(randnum,1)
                 personnel-=1
             }
@@ -142,7 +160,7 @@ function deception_decide_role(personnel,player) {//랜덤으로 역할 정하�
         else {//인원초과.
         }
     }
-    return god, murderer, witness, confederate
+    return deception_player
 }
 module.exports = (server) => {
     const io = Socketio(server, {
@@ -151,19 +169,7 @@ module.exports = (server) => {
             credential:true
         }
     })
-    io.on('connection',(socket) => {
-        let clue_deck //deception의 단서카드 정보 ex) 사용자의 단서카드 값 = 4라면 clue_deck의 5번째 정보를 참조하면 됨.
-        let means_deck //deception 수단카드 정보. 위와 마찬가지.
-        let clue // deception에 실제 사용되는 단서카드
-        let means // deception에 실제 사용되는 단서카드
-        let murderer //살인자 플레이어 닉네임 혹은 번호
-        let murder_means // 살인자 수단카드 번호
-        let murder_clue //살인자 단서카드 번호
-        let deception_player = []
-        
-
-        
-
+    io.on('connection',(socket) => {    
         const req = socket.request;
         const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         console.log('새로운 클라이언트 접속! ip:', ip,'socketid:', socket.id,'reqip:', req.ip);
@@ -205,12 +211,17 @@ module.exports = (server) => {
     
         socket.on('deceptionJoin',(data) => {
             let room = data.room    
-            console.log('data: ',data)  
+            console.log('data: ',data)
+            let player_form = {socketId: '', name: '', job: 'detective', clue: [], means: []}
             if (data.room != '') {
                 socket.join(room)
+
                 console.log(room+'번 방 join 완료!')
-                deception_player.push(socket.id)
+                player_form.socketId = socket.id
+                deception_player.push(player_form)
+
                 console.log('플레이어: ',deception_player)
+
                 socket.to(room).emit('joindeception',{
                     deception_player
                 })
@@ -236,46 +247,19 @@ module.exports = (server) => {
         })
     
         socket.on('deceptionStart',(data) => {//게임 시작(카드 덱 설정)
-            let {room,personnel,player,card_count} = data
-            let murderer
-            let god //법의학자를 '신'이라고 칭하겠음.
-            let confederate = [] //공범
-            let witness //목격자 
-            let player_clue
-            let player_means
+            let {room,personnel,card_count} = data
             //초기 덱 설정
-            clue_deck, means_deck = deception_init_game()
+            [deception_clue_deck, deception_means_deck] = deception_init_game()
             //직업정하기
-            god, murderer, witness, confederate = deception_decide_role(personnel,player)
+            deception_player = deception_decide_role(personnel,deception_player)
             //카드뽑기
-            clue,player_clue = deception_draw_card(clue,card_count)
-            means,player_means = deception_draw_card(means,card_count)
+            for(let i=0;i<personnel;i++) {
+                [deception_clue, deception_player[i].clue] = deception_draw_card(deception_clue,card_count)
+                [deception_means, deception_player[i].means] = deception_draw_card(deception_means,card_count)
+            }
             socket.to(room).emit('deceptionStart', {
-                job:{god, murderer, witness, confederate}
-            })
-            
-        })
-
-        // socket.on('deceptionDecideRoles',(data) => { //플레이어 정보(번호나 닉네임)을 전달받고 역할 정해서 리턴
-        //     const {personnel,player} = data
-        //     let murderer
-        //     let god //법의학자를 '신'이라고 칭하겠음.
-        //     let confederate = [] //공범
-        //     let witness //목격자
-        //     god, murderer, witness, confederate = deception_decide_role(personnel,player)
-        //     socket.to(room).emit('deceptionDraw',{//특수직업만 반환. 나머지는 수사관
-        //         god, murderer, witness, confederate
-        //     })
-        // })
-        socket.on('dceptionDraw',(data) => { //처음 카드 뽑을 때
-            const{room, card_count} = data
-            let player_clue
-            let player_means
-            clue,player_clue = deception_draw_card(clue,card_count)
-            means,player_means = deception_draw_card(means,card_count)
-            socket.to(room).emit('deceptionDraw',{
-                player_clue, player_means
-            })
+                deception_player
+            })            
         })
 
         socket.on('deceptionTime',(data)=>{ //시간 증감 고민중.
@@ -289,7 +273,7 @@ module.exports = (server) => {
             let guess_means = data.means
             let guess_clue = data.clue
             let anwer
-            if (guess_murderer == murderer && guess_means == murder_means && guess_clue == murder_clue) {
+            if (guess_murderer == deception_murderer && guess_means == deception_murder_means && guess_clue == deception_murder_clue) {
                 anwer = 'right answer'
                 socket.to(room).emit('deceptionGuessAnswer', {anwer})
             }
