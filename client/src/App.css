@@ -2,6 +2,7 @@
 
 .deceptionCard:hover{
   background-color: #ddd;
+  cursor: pointer;
 }
 
 .deceptionCard:active{

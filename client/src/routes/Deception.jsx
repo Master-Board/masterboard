@@ -3,16 +3,17 @@ import { Link, useParams } from "react-router-dom";
 import io from "socket.io-client";
 import DeceptionUser from './DeceptionUser';
 
-const ENDPOINT = 'http://localhost:5000';
-const socket = io(ENDPOINT);
+let socket;
 
 function Deception(props) {
 
   const [user, setUser] = useState('');
   const [room, setRoom] = useState('');
+  const [myJob, setMyJob] = useState('');
   const [chatting, setChatting] = useState(false);
   const [message, setMessage] = useState('');
   const [text, setText] = useState('');
+  const [broadcast, setBroadcast] = useState('법의학자가 선택중입니다');
   const [messages, setMessages] = useState([{name: "형진", message: "hi"}, {name: "형진", message: "hello"}]);
   const { roomNumber } = useParams();
   let userIndex=1;
@@ -22,27 +23,31 @@ function Deception(props) {
   useEffect(() => {
     setUser(props.user.id);
     setRoom(roomNumber);
+    const ENDPOINT = 'http://localhost:5000';
+    socket = io(ENDPOINT);
 
     console.log(user, room);
     console.log(socket);
 
-    socket.emit("joindeception", {room});
-    
+    socket.emit("deceptionJoin", {room});
   }, [room]);
 
+  // 메세지 받기
   useEffect(() => {
-    // 메세지 받기
     socket.on("chatting", (data) => {
-      setMessages([...messages, data]);
+      console.log(data)
+      setMessages([...messages, data])
     });
-
   }, [messages]);
 
+  // 유저정보 받기
   useEffect(() => {
-    // 유저 받기
-    // socket.on("유저받기", (data) => {
-    //   setUsers(data)
-    // })
+    socket.on("userData", (data) => {
+      setUsers(data)
+    })
+  }, [users])
+
+  useEffect(() => {
     for(let i = 0; i < users.length; i++){
       if(users[i].name == user) userIndex = i;
     }
@@ -55,6 +60,7 @@ function Deception(props) {
 
   const sendMessage = () => {
       socket.emit("chatting", {message});
+      setMessages([...messages, {name: user, message: text}])
       setText('');
   };
 
@@ -62,13 +68,21 @@ function Deception(props) {
     socket.disconnect();
   }
 
+  const startGame = () => {
+    setMyJob(users[userIndex].job);
+    if(myJob == '법의학자'){
+    }
+  }
+
+
   return (
-      <div id="deception" style={{background: 'url("img/background.webp")', backgroundSize: 'cover', width: '100%', height: '100%'}}>
+      <div id="deception" style={{backgroundImage: 'url(../public/img/background.webp)', backgroundSize: 'cover'}}>
         {user}님 어서오세요! #{room} 디셉션 방입니다
         <button onClick={()=>setChatting(!chatting)}>채팅</button>
-        <button>준비</button>
+        <span>{broadcast}</span>
+        <button onClick={()=>startGame}>준비</button>
         <button onClick={Disconnect}><Link to="/mainpage">나가기</Link></button>
-        <body style={{display: "flex", position: "relative"}}>
+        <div style={{display: "flex", position: "relative"}}>
           {chatting === true ? 
             <div style={{width: "300px", height: "600px", border: "2px solid #111", position: "absolute", background: "#fff"}}>
               <div style={{backgroundColor: "#eee"}}>Room : {room}</div>
@@ -105,7 +119,7 @@ function Deception(props) {
               {users.length<10? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+9)%(users.length)]}/>}
             </div>
           </div>
-        </body>
+        </div>
       </div>
     );
   }
