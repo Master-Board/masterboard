@@ -159,13 +159,14 @@ module.exports = (server) => {
         let murderer //살인자 플레이어 닉네임 혹은 번호
         let murder_means // 살인자 수단카드 번호
         let murder_clue //살인자 단서카드 번호
-        let score
+        let deception_player = []
+        
 
         
 
         const req = socket.request;
         const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        console.log('새로운 클라이언트 접속!', ip, socket.id, req.ip);
+        console.log('새로운 클라이언트 접속! ip:', ip,'socketid:', socket.id,'reqip:', req.ip);
         socket.on('disconnect', () => { // 연결 종료 시
             console.log('클라이언트 접속 해제', ip, socket.id);
             clearInterval(socket.interval);
@@ -178,7 +179,7 @@ module.exports = (server) => {
             console.log('m: ',message)
             console.log('r: ',room)
 
-            socket.emit('chatting',{
+            socket.broadcast.emit('chatting',{
                 name,
                 message,
                 msg_time,
@@ -202,19 +203,28 @@ module.exports = (server) => {
             }
         })
     
-        socket.on('joindeception',(data) => {
+        socket.on('deceptionJoin',(data) => {
             let room = data.room    
             console.log('data: ',data)  
             if (data.room != '') {
                 socket.join(room)
                 console.log(room+'번 방 join 완료!')
+                deception_player.push(socket.id)
+                console.log('플레이어: ',deception_player)
+                socket.to(room).emit('joindeception',{
+                    deception_player
+                })
             }
             else{
                 console.log('value is empty!')
             }
         })
+
+        socket.on('deceptionReady',(data) => {
+
+        })
     
-        socket.on('leavedeception',(data) => {   
+        socket.on('deceptionLeave',(data) => {   
             let room = data.room
             if (data.room != '') {
                 socket.leave(room)
@@ -243,7 +253,7 @@ module.exports = (server) => {
                 god, murderer, witness, confederate
             })
         })
-    
+        // 유저 이름, 직업, 카드들.
         socket.on('dceptionDraw',(data) => { //처음 카드 뽑을 때
             const{room, card_count} = data
             let player_clue
@@ -275,6 +285,6 @@ module.exports = (server) => {
                 socket.to(room).emit('deceptionGuessAnswer', {anwer})
             }
         })
-        
+
     })
 }
