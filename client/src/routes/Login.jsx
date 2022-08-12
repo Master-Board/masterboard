@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useNavigate } from 'react-router-dom';
 
 function Login(props){
+
+    const navigate = useNavigate();
 
     const [id, setId] = useState("");
     const [pw, setPw] = useState("");
@@ -51,6 +54,12 @@ function Login(props){
                 className="btn btn-outline-secondary"
                 type="button"
                 id="button-addon2"
+                onClick={()=>{
+                    const copy = props.user
+                    copy.id = id
+                    props.setUser(copy)
+                    navigate('/mainpage')
+                }}
                 >
                 로그인
             </button>

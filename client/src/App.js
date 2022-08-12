@@ -50,7 +50,7 @@ function App() {
 
       <Router>
         <Routes>
-          <Route path="/" element={user.isLogIn == true ? <Navigate to="/mainpage" /> : <Navigate to="/login" />} />
+          <Route path="/" element={user.isLogIn == true ? <Navigate to="/login" /> : <Navigate to="/login" />} />
           <Route path="/login" element={<Login user={user} setUser={setUser} />} />
           <Route path="/signup" element={<Signup user={user} setUser={setUser} />} />
           <Route path="/mainpage" element={<Mainpage user={user} setUser={setUser} games={games} setGames={setGames} />} />
