@@ -15,6 +15,8 @@ function Deception(props) {
   const [text, setText] = useState('');
   const [broadcast, setBroadcast] = useState('법의학자가 선택중입니다');
   const [messages, setMessages] = useState([{name: "형진", message: "hi"}, {name: "형진", message: "hello"}]);
+  const [minutes, setMinutes] = useState(0)
+  const [seconds, setSeconds] = useState(0)
   const { roomNumber } = useParams();
   let userIndex=1;
 
@@ -62,6 +64,23 @@ function Deception(props) {
   }, [users]);
 
   useEffect(() => {
+    const countdown = setInterval(() => {
+      if(parseInt(seconds) > 0) {
+        setSeconds(parseInt(seconds) - 1)
+      }
+      if(parseInt(seconds) === 0) {
+        if(parseInte(minutes) === 0) {
+          clearInterval(countdown)
+        }else{
+          setMinutes(parseInt(minutes) - 1)
+          setSeconds(59)
+        }
+      }
+    }, 1000)
+    return () => clearInterval(countdown)
+  }, [minutes, seconds])
+
+  useEffect(() => {
     setMessage({name: user, message: text, room: room});
   }, [text])
 
@@ -97,7 +116,8 @@ function Deception(props) {
       <div id="deception" style={{backgroundImage: 'url(../public/img/background.webp)', backgroundSize: 'cover'}}>
         {user}님 어서오세요! #{room} 디셉션 방입니다
         <button onClick={()=>setChatting(!chatting)}>채팅</button>
-        <span>{broadcast}</span>
+        <span>{broadcast} </span>
+        <span>{minutes}:{seconds < 10? `0${seconds}` : seconds}</span>
         {/* <button onClick={()=>ready}>준비</button> */}
         <button onClick={Disconnect}><Link to="/mainpage">나가기</Link></button>
         <div style={{display: "flex", position: "relative"}}>

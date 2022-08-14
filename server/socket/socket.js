@@ -1,4 +1,4 @@
-const Socketio = require('socket.io')
+const Socketio = require('socket.io').listen(app)
 const moment = require('moment')
 let deception_player
 let deception_clue_deck //deception의 단서카드 정보 ex) 사용자의 단서카드 값 = 4라면 clue_deck의 5번째 정보를 참조하면 됨.
