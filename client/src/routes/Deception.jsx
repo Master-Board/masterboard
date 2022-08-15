@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams } from "react-router-dom";
 import io from "socket.io-client";
 import DeceptionUser from './DeceptionUser';
+import GodChooseModal from './GodChooseModal';
 
 let socket;
 
@@ -17,6 +18,7 @@ function Deception(props) {
   const [messages, setMessages] = useState([{name: "형진", message: "hi"}, {name: "형진", message: "hello"}]);
   const [minutes, setMinutes] = useState(0)
   const [seconds, setSeconds] = useState(0)
+  const [showGodChoose, setShowGodChoose] = useState(false);
   const { roomNumber } = useParams();
   let userIndex=1;
 
@@ -32,6 +34,9 @@ function Deception(props) {
                 {title: '범죄 일시', content: ['평일', '주말', '봄', '여름', '가을', '겨울']},
                 {title: '범죄 지속 기간', content: ['즉각적', '단시간', '서서히', '장시간', '며칠', '불확실한']}]
   
+  const handleCloseGodChoose = () => setShowGodChoose(false);
+  const handleShowGodChoose = () => setShowGodChoose(true);
+
   useEffect(() => {
     setUser(props.user.id);
     setRoom(roomNumber);
@@ -111,7 +116,7 @@ function Deception(props) {
     setMyJob(users[userIndex].job);
 
     //직업 정하기
-    setTimeout(function(){ setBroadcast(`당신은 ${myJob}입니다. 법의학자가 선택을 완료할때까지 기다려주세요.`) }, 1500)
+    setTimeout(function(){ setBroadcast(`당신은 ${myJob}입니다. 살인자가 선택을 완료할때까지 기다려주세요.`) }, 1500)
     
 
     if(myJob == 'god'){ // 법의학자
@@ -136,7 +141,7 @@ function Deception(props) {
         <button onClick={()=>setChatting(!chatting)}>채팅</button>
         <span>{broadcast} </span>
         <span>{minutes}:{seconds < 10? `0${seconds}` : seconds}</span>
-        <button onClick={()=>ready}>준비</button>
+        <button onClick={()=>handleShowGodChoose()}>준비</button>
         <button onClick={Disconnect}><Link to="/mainpage">나가기</Link></button>
         <div style={{display: "flex", position: "relative"}}>
           {chatting === true ? 
@@ -163,7 +168,7 @@ function Deception(props) {
             <div className='middle' style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
               {users.length<5? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+4)%(users.length)]}/>}
               <div style={{width: "800px", height: "250px", margin: "0px 55px", border: "1px solid #111"}}>
-                
+                <GodChooseModal showGodChoose={showGodChoose} handleCloseGodChoose={handleCloseGodChoose} hint={hint} />
               </div>
               {users.length<6? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+5)%(users.length)]}/>}
             </div>
