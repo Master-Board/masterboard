@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import io from "socket.io-client";
 import DeceptionUser from './DeceptionUser';
 import GodChooseModal from './GodChooseModal';
+import MurdererChooseModal from './MurdererChooseModal';
 
 let socket;
 
@@ -18,7 +19,9 @@ function Deception(props) {
   const [messages, setMessages] = useState([{name: "형진", message: "hi"}, {name: "형진", message: "hello"}]);
   const [minutes, setMinutes] = useState(0)
   const [seconds, setSeconds] = useState(0)
+  const [answer, setAnswer] = useState({blue: '', red: ''});
   const [showGodChoose, setShowGodChoose] = useState(false);
+  const [showMurdererChoose, setShowMurdererChoose] = useState(false);
   const { roomNumber } = useParams();
   let userIndex=1;
 
@@ -36,6 +39,9 @@ function Deception(props) {
   
   const handleCloseGodChoose = () => setShowGodChoose(false);
   const handleShowGodChoose = () => setShowGodChoose(true);
+
+  const handleCloseMurdererChoose = () => setShowMurdererChoose(false);
+  const handleShowMurdererChoose = () => setShowMurdererChoose(true);
 
   useEffect(() => {
     setUser(props.user.id);
@@ -141,7 +147,7 @@ function Deception(props) {
         <button onClick={()=>setChatting(!chatting)}>채팅</button>
         <span>{broadcast} </span>
         <span>{minutes}:{seconds < 10? `0${seconds}` : seconds}</span>
-        <button onClick={()=>handleShowGodChoose()}>준비</button>
+        <button onClick={()=>handleShowMurdererChoose()}>준비</button>
         <button onClick={Disconnect}><Link to="/mainpage">나가기</Link></button>
         <div style={{display: "flex", position: "relative"}}>
           {chatting === true ? 
@@ -169,6 +175,7 @@ function Deception(props) {
               {users.length<5? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+4)%(users.length)]}/>}
               <div style={{width: "800px", height: "250px", margin: "0px 55px", border: "1px solid #111"}}>
                 <GodChooseModal showGodChoose={showGodChoose} handleCloseGodChoose={handleCloseGodChoose} hint={hint} />
+                <MurdererChooseModal showMurdererChoose={showMurdererChoose} handleCloseMurdererChoose={handleCloseMurdererChoose} user={users[userIndex]} answer={answer} setAnswer={setAnswer} />
               </div>
               {users.length<6? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+5)%(users.length)]}/>}
             </div>
