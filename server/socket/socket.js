@@ -298,14 +298,14 @@ module.exports = (server) => {
             let guess_murderer = data.murderer
             let guess_means = data.means
             let guess_clue = data.clue
-            let anwer
+            let answer
             if (guess_murderer == deception_murderer && guess_means == deception_murder_means && guess_clue == deception_murder_clue) {
-                anwer = 'right answer'
-                socket.to(room).emit('deceptionGuessAnswer', {anwer})
+                answer = 'right answer'
+                socket.to(room).emit('deceptionGuessAnswer', {answer})
             }
             else {
-                anwer = 'wrong anwer'
-                socket.to(room).emit('deceptionGuessAnswer', {anwer})
+                answer = 'wrong anwer'
+                socket.to(room).emit('deceptionGuessAnswer', {answer})
             }
         })
 

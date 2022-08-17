@@ -15,10 +15,11 @@ function Deception(props) {
   const [chatting, setChatting] = useState(false);
   const [message, setMessage] = useState('');
   const [text, setText] = useState('');
-  const [broadcast, setBroadcast] = useState('법의학자가 선택중입니다');
+  const [broadcast, setBroadcast] = useState('살인자가 선택중입니다');
   const [messages, setMessages] = useState([{name: "형진", message: "hi"}, {name: "형진", message: "hello"}]);
   const [minutes, setMinutes] = useState(0)
   const [seconds, setSeconds] = useState(0)
+  const [timer, setTimer] = useState(false)
   const [answer, setAnswer] = useState({blue: '', red: ''});
   const [showGodChoose, setShowGodChoose] = useState(false);
   const [showMurdererChoose, setShowMurdererChoose] = useState(false);
@@ -114,6 +115,13 @@ function Deception(props) {
 
   const Disconnect = () => {
     socket.emit("deceptionLeave", {room})
+  }
+
+  const Guess = () => {
+    socket.emit("deceptionGuessAnswer", {room: room, muderer: muderer, means: blue, clue: red})
+    socket.on("deceptionGuessAnswer", (data) => {
+      console.log(data.answer)
+    })
   }
 
   const startGame = () => {
