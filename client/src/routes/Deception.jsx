@@ -21,6 +21,7 @@ function Deception(props) {
   const [seconds, setSeconds] = useState(0)
   const [timer, setTimer] = useState(false)
   const [answer, setAnswer] = useState({blue: '', red: ''});
+  const [godChoice, setGodChoice] = useState({});
   const [showGodChoose, setShowGodChoose] = useState(false);
   const [showMurdererChoose, setShowMurdererChoose] = useState(false);
   const { roomNumber } = useParams();
@@ -78,11 +79,17 @@ function Deception(props) {
     })
   }, [])
 
+  // share에 정보 업데이트
+  useEffect(() => {
+    socket.on("godChoice", (data) => {
+
+    })
+  })
+
   useEffect(() => {
     for(let i = 0; i < users.length; i++){
       if(users[i].name == user) userIndex = i;
     }
-
   }, [users]);
 
   // 타이머
@@ -124,23 +131,24 @@ function Deception(props) {
     })
   }
 
-  const startGame = () => {
+  const startGame = async () => {
     console.log("게임시작")
     setBroadcast("게임이 시작되었습니다.")
     setMyJob(users[userIndex].job);
 
     //직업 정하기
-    setTimeout(function(){ setBroadcast(`당신은 ${myJob}입니다. 살인자가 선택을 완료할때까지 기다려주세요.`) }, 1500)
-    
+    // 법의학자 god 살인자 murderer 목격자 witness 공범자 confederate
+    // setTimeout(function(){ setBroadcast(`당신은 ${myJob}입니다. 살인자가 선택을 완료할때까지 기다려주세요.`) }, 2000)
+    setBroadcast(`당신은 ${myJob}입니다. 살인자가 선택을 완료할때까지 기다려주세요.`)
 
-    if(myJob == 'god'){ // 법의학자
-
-    }else if(myJob == 'murderer'){ // 살인자
-
-    }else if(myJob == 'witness'){ // 목격자
-
-    }else if(myJob == 'confederate'){ // 공범자
-
+    if(myJob == 'murderer'){ // 살인자
+      setTimeout(function(){ handleShowMurdererChoose() }, 4000)
+      await socket.emit("murder", {answer})
+      setBroadcast("누군가 살인을 했습니다! 법의학자가 선택을 완료할때까지 기다려주세요.")
+      if(myJob == 'god'){
+        handleShowGodChoose()
+        await socket.emit("godChoice", {godChoice})
+      }
     }
   }
 
@@ -155,7 +163,7 @@ function Deception(props) {
         <button onClick={()=>setChatting(!chatting)}>채팅</button>
         <span>{broadcast} </span>
         <span>{minutes}:{seconds < 10? `0${seconds}` : seconds}</span>
-        <button onClick={()=>handleShowMurdererChoose()}>준비</button>
+        <button onClick={()=>ready()}>준비</button>
         <button onClick={Disconnect}><Link to="/mainpage">나가기</Link></button>
         <div style={{display: "flex", position: "relative"}}>
           {chatting === true ? 
