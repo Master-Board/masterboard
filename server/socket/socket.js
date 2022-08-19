@@ -212,7 +212,7 @@ module.exports = (server) => {
         socket.on('deceptionJoin',(data) => {
             let room = data.room    
             console.log('data: ',data)
-            let player_form = {socketId: '', name: '', ready: false, job: 'detective', clue: [], means: []}
+            let player_form = {name: '', ready: false, job: 'detective', clue: [], means: []}
             if (data.room != '') {
                 socket.join(room)
 
@@ -288,9 +288,28 @@ module.exports = (server) => {
             })            
         })
 
-        socket.on('deceptionTime',(data)=>{ //시간 증감 고민중.
-            const{roon, time} = data
+        socket.on('deceptionMurdererChoice',(data)=>{ 
+            const{room, means, clue} = data
+            deception_murder_means = means
+            deception_murder_clue -clue
+            socket.to(room).emit('deceptionMurdererChoice',{
+                data
+            })
+        })
+    
+        socket.on('deceptionGodChoice',(data)=>{ 
+            const{room} = data
+            socket.to(room).emit('deceptionMurdererChoice',{
+                data
+            })
+        })
+    
 
+        socket.on('deceptionTime',(data)=>{ //시간 증감 고민중.
+            const{room, time} = data
+            socket.broadcast.to(room).emit('deceptionTime', {
+                time
+            })
         })
     
         socket.on('deceptionGuessAnswer',(data) =>{ //최후의 추리
