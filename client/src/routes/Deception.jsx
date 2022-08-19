@@ -17,7 +17,7 @@ function Deception(props) {
   const [text, setText] = useState('');
   const [broadcast, setBroadcast] = useState('살인자가 선택중입니다');
   const [messages, setMessages] = useState([{name: "형진", message: "hi"}, {name: "형진", message: "hello"}]);
-  const [minutes, setMinutes] = useState(0)
+  const [minutes, setMinutes] = useState(1)
   const [seconds, setSeconds] = useState(0)
   const [timer, setTimer] = useState(false)
   const [answer, setAnswer] = useState({blue: '', red: ''});
@@ -125,7 +125,7 @@ function Deception(props) {
   }
 
   const Guess = () => {
-    socket.emit("deceptionGuessAnswer", {room: room, muderer: muderer, means: blue, clue: red})
+    // socket.emit("deceptionGuessAnswer", {room: room, muderer: muderer, means: blue, clue: red})
     socket.on("deceptionGuessAnswer", (data) => {
       console.log(data.answer)
     })
@@ -163,7 +163,7 @@ function Deception(props) {
         <button onClick={()=>setChatting(!chatting)}>채팅</button>
         <span>{broadcast} </span>
         <span>{minutes}:{seconds < 10? `0${seconds}` : seconds}</span>
-        <button onClick={()=>ready()}>준비</button>
+        <button onClick={()=>handleShowGodChoose()}>준비</button>
         <button onClick={Disconnect}><Link to="/mainpage">나가기</Link></button>
         <div style={{display: "flex", position: "relative"}}>
           {chatting === true ? 

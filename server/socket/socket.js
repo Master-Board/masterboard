@@ -1,6 +1,6 @@
 const Socketio = require('socket.io')
 const moment = require('moment')
-let deception_player
+let deception_player = []
 let deception_clue_deck //deception의 단서카드 정보 ex) 사용자의 단서카드 값 = 4라면 clue_deck의 5번째 정보를 참조하면 됨.
 let deception_means_deck //deception 수단카드 정보. 위와 마찬가지.
 let deception_clue // deception에 실제 사용되는 단서카드
@@ -298,14 +298,14 @@ module.exports = (server) => {
             let guess_murderer = data.murderer
             let guess_means = data.means
             let guess_clue = data.clue
-            let answer
+            let anwer
             if (guess_murderer == deception_murderer && guess_means == deception_murder_means && guess_clue == deception_murder_clue) {
-                answer = 'right answer'
-                socket.to(room).emit('deceptionGuessAnswer', {answer})
+                anwer = 'right answer'
+                socket.to(room).emit('deceptionGuessAnswer', {anwer})
             }
             else {
-                answer = 'wrong anwer'
-                socket.to(room).emit('deceptionGuessAnswer', {answer})
+                anwer = 'wrong anwer'
+                socket.to(room).emit('deceptionGuessAnswer', {anwer})
             }
         })
 
