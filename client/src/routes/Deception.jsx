@@ -143,11 +143,11 @@ function Deception(props) {
 
     if(myJob == 'murderer'){ // 살인자
       setTimeout(function(){ handleShowMurdererChoose() }, 4000)
-      await socket.emit("murder", {answer})
+      await socket.emit("deceptionMurdererChoice", {answer})
       setBroadcast("누군가 살인을 했습니다! 법의학자가 선택을 완료할때까지 기다려주세요.")
       if(myJob == 'god'){
         handleShowGodChoose()
-        await socket.emit("godChoice", {godChoice})
+        await socket.emit("deceptionGodChoice", {godChoice})
       }
     }
   }
