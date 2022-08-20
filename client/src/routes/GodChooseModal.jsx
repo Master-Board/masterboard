@@ -3,8 +3,12 @@ import "bootstrap/dist/css/bootstrap.css";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
+import { useEffect } from 'react';
+import { useState } from 'react';
 
 function GodChooseModal(props) {
+
+  const [hintArrayIndex, setHintArrayIndex] = useState([]);
 
     // 최대범위와 갯수를 넣으면 중복 없는 랜덤값 생성
     function ranNum (MaxNum, theNumber) {  
@@ -23,8 +27,10 @@ function GodChooseModal(props) {
         return ran;
     }
         
-    const hintArrayIndex = ranNum(props.hint.length, 4)
-    console.log(hintArrayIndex)
+    useEffect(() => {
+      setHintArrayIndex(ranNum(props.hint.length, 4))
+      console.log(hintArrayIndex)
+    }, [])
 
   return (
     <div>
@@ -47,13 +53,13 @@ function GodChooseModal(props) {
                 <label className="form-check-label"><input className="form-check-input" type="radio" name="사인" value="과다출혈"/>과다출혈</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="사인" value="병/질병"/>병/질병</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="사인" value="질병"/>질병</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="사인" value="중독"/>중독</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="사인" value="독살"/>독살</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="사인" value="사고"/>사고</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="사인" value="사고사"/>사고사</label>
               </div>
             </Form.Group>
             <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
@@ -61,45 +67,25 @@ function GodChooseModal(props) {
               <br/>
               <span>그룹 1&nbsp;&nbsp;&nbsp;</span>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="술집" />술집</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="놀이터" />놀이터</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="서점"/>서점</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="교실"/>교실</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="식당"/>식당</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="기숙사"/>기숙사</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="호텔"/>호텔</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="구내식당"/>구내식당</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="병원"/>병원</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="엘리베이터"/>엘리베이터</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="건축부지"/>건축부지</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="공중화잘실"/>공중화잘실</label>
               </div>
               <br/>
               <span>그룹 2&nbsp;&nbsp;&nbsp;</span>
-              <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="별장"/>별장</label>
-              </div>
-              <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="공원"/>공원</label>
-              </div>
-              <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="슈퍼마켓"/>슈퍼마켓</label>
-              </div>
-              <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="학교"/>학교</label>
-              </div>
-              <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="숲"/>숲</label>
-              </div>
-              <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="은행"/>은행</label>
-              </div>
-              <br/>
-              <span>그룹 3&nbsp;&nbsp;&nbsp;</span>
               <div className="form-check form-check-inline">
                 <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="거실"/>거실</label>
               </div>
@@ -117,6 +103,26 @@ function GodChooseModal(props) {
               </div>
               <div className="form-check form-check-inline">
                 <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="발코니"/>발코니</label>
+              </div>
+              <br/>
+              <span>그룹 3&nbsp;&nbsp;&nbsp;</span>
+              <div className="form-check form-check-inline">
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="별장"/>별장</label>
+              </div>
+              <div className="form-check form-check-inline">
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="공원"/>공원</label>
+              </div>
+              <div className="form-check form-check-inline">
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="슈퍼마켓"/>슈퍼마켓</label>
+              </div>
+              <div className="form-check form-check-inline">
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="학교"/>학교</label>
+              </div>
+              <div className="form-check form-check-inline">
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="숲속"/>숲속</label>
+              </div>
+              <div className="form-check form-check-inline">
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="은행"/>은행</label>
               </div>
             </Form.Group>
             <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">

@@ -17,8 +17,8 @@ function Deception(props) {
   const [text, setText] = useState('');
   const [broadcast, setBroadcast] = useState('살인자가 선택중입니다');
   const [messages, setMessages] = useState([{name: "형진", message: "hi"}, {name: "형진", message: "hello"}]);
-  const [minutes, setMinutes] = useState(1)
-  const [seconds, setSeconds] = useState(0)
+  const [minutes, setMinutes] = useState(2)
+  const [seconds, setSeconds] = useState(30)
   const [timer, setTimer] = useState(false)
   const [answer, setAnswer] = useState({blue: '', red: ''});
   const [godChoice, setGodChoice] = useState({});
@@ -27,17 +27,29 @@ function Deception(props) {
   const { roomNumber } = useParams();
   let userIndex=1;
 
-  const [users, setUsers] = useState([{name: "민철", job: null, blue: [12, 42, 53, 13], red: [2, 43, 25, 83]}, {name: "형진", job: null, blue: [54, 62, 11, 40], red: [1, 3, 4, 5]}, {name: "민호", job: null, blue: [6, 7, 8, 9], red: [6, 7, 8, 9]}, {name: "박철", job: null, blue: [10, 11, 12, 13], red: [14, 15, 16, 17]}]);
-  const cause = ['질식', '중상', '과다출혈', '병/질병', '중독', '사고']
-  const place = [['술집', '서점', '식당', '호텔', '병원', '건축부지'], ['별장', '공원', '슈퍼마켓', '학교', '숲', '은행'], ['거실', '침실', '창고', '화장실', '부엌', '발코니']]
-  const hint = [{title: '희생자의 직업', content: ['사장', '전문가', '노동자', '학생', '실직자', '은퇴']}, 
-                {title: '날씨', content: ['화창한', '폭풍우', '건조한', '습한', '추운', '뜨거운']},
-                {title: '인상착의', content: ['흔한', '개성적인', '수상한', '무정한', '무서운', '의심스런']},
-                {title: '시신에 있는 암시', content: ['머리', '가슴', '손', '다리', '시신 토막', '전신']},
-                {title: '하는 중', content: ['유흥', '휴식', '회의', '거래', '방문', '식사']},
-                {title: '시체 상태', content: ['아직 따듯한', '경직된', '부패된', '불구', '멀쩡한', '접질린']},
-                {title: '범죄 일시', content: ['평일', '주말', '봄', '여름', '가을', '겨울']},
-                {title: '범죄 지속 기간', content: ['즉각적', '단시간', '서서히', '장시간', '며칠', '불확실한']}]
+  const [users, setUsers] = useState([{name: "창현", job: null, blue: [12, 42, 53, 13], red: [2, 43, 25, 83]}, {name: "형진", job: null, blue: [54, 62, 11, 40], red: [1, 3, 4, 5]}, {name: "민호", job: null, blue: [6, 7, 8, 9], red: [6, 7, 8, 9]}, {name: "박철", job: null, blue: [10, 11, 12, 13], red: [14, 15, 16, 17]}]);
+  const cause = ['질식', '중상', '과다출혈', '질병', '독살', '사고사']
+  const place = [['놀이터', '교실', '기숙사', '구내식당', '엘리베이터', '공중화잘실'], ['거실', '침실', '창고', '화장실', '부엌', '발코니'], ['별장', '공원', '슈퍼마켓', '학교', '숲속', '은행']]
+  const hint = [{title: '피해자의 신체특성', content: ['큰 체격', '마름', '키가 큼', '키가 작음', '장애가 있음', '보통의 체격']}, 
+                {title: '현장에 남겨진 흔적', content: ['지문', '발자국', '타박상', '핏자국', '체액', '흉터']},
+                {title: '살인자의 성격', content: ['오만한', '비열한', '다혈질', '탐욕스러운', '강압적', '변태적']},
+                {title: '발견된 단서', content: ['자연스러움', '예술적', '기록되어 있음', '인조 물질', '개연적', '관계없음']},
+                {title: '범죄기간', content: ['즉각적', '단시간', '점진적', '장기적', '며칠동안', '확실하지 않음']},
+                {title: '사회적 관계', content: ['가족', '친구', '동료', '고용주/종업원', '연인', '모르는 사람']},
+                {title: '범죄 동기', content: ['증오', '권력', '돈', '사랑', '질투', '정의']},
+                {title: '피해자의 복장상태', content: ['단정함', '지저분함', '우아함', '허름함', '독특함', '나체']},
+                {title: '사망 시각', content: ['새벽', '아침', '정오', '오후', '저녁', '밤']},
+                {title: '피해자의 신원', content: ['어린이', '청소년', '중년', '노인', '남성', '여성']},
+                {title: '피해자의 직업', content: ['경영직', '전문직', '노동직', '학생', '무직', '은퇴']},
+                {title: '날씨', content: ['맑음', '폭풍우', '건조함', '습함', '추운날씨', '더운날씨']},
+                {title: '전반적인 인상', content: ['평범한', '창의적인', '수상함', '잔인함', '공포스러움', '긴장감 넘침']},
+                {title: '사건 당일', content: ['평일', '주말', '봄', '여름', '가을', '겨울']},
+                {title: '피해자의 표정', content: ['평온함', '힘겨워함', '겁먹음', '고통스러움', '무표정함', '화남']},
+                {title: '범죄현장 상황', content: ['어질러져 있음', '잿더미', '물얼룩', '깨진 흔적', '무질서함', '정돈됨']},
+                {title: '갑작스러운 사건', content: ['정전', '화재', '다툼', '금품도난', '비명', '없음']},
+                {title: '시체의 상태', content: ['온기가 남아있음', '경직됨', '부패함', '훼손됨', '온전함', '뒤틀림']},
+                {title: '범행 시 상황', content: ['여가중', '휴가중', '회의중', '거래중', '방문중', '식사중']},
+                {title: '시체에서의 단서', content: ['머리', '가슴', '손', '다리', '일부분', '전체적']}]
   
   const handleCloseGodChoose = () => setShowGodChoose(false);
   const handleShowGodChoose = () => setShowGodChoose(true);
