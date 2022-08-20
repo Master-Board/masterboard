@@ -44,22 +44,46 @@ function GodChooseModal(props) {
               <Form.Label><h5>사인</h5></Form.Label>
               <br />
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="사인" value="질식"/>질식</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="사인" value="질식" onClick={(e) => {
+                  let copy = props.godChoice;
+                  copy.godCause = e.target.value;
+                  props.setGodChoice(copy);
+                }}/>질식</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="사인" value="중상"/>중상</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="사인" value="중상" onClick={(e) => {
+                  let copy = props.godChoice;
+                  copy.godCause = e.target.value;
+                  props.setGodChoice(copy);
+                }}/>중상</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="사인" value="과다출혈"/>과다출혈</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="사인" value="과다출혈" onClick={(e) => {
+                  let copy = props.godChoice;
+                  copy.godCause = e.target.value;
+                  props.setGodChoice(copy);
+                }}/>과다출혈</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="사인" value="질병"/>질병</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="사인" value="질병" onClick={(e) => {
+                  let copy = props.godChoice;
+                  copy.godCause = e.target.value;
+                  props.setGodChoice(copy);
+                }}/>질병</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="사인" value="독살"/>독살</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="사인" value="독살" onClick={(e) => {
+                  let copy = props.godChoice;
+                  copy.godCause = e.target.value;
+                  props.setGodChoice(copy);
+                }}/>독살</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="사인" value="사고사"/>사고사</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="사인" value="사고사" onClick={(e) => {
+                  let copy = props.godChoice;
+                  copy.godCause = e.target.value;
+                  props.setGodChoice(copy);
+                }}/>사고사</label>
               </div>
             </Form.Group>
             <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
@@ -67,62 +91,134 @@ function GodChooseModal(props) {
               <br/>
               <span>그룹 1&nbsp;&nbsp;&nbsp;</span>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="놀이터" />놀이터</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="놀이터" onClick={(e) => {
+                  let copy = props.godChoice;
+                  copy.godPlace = e.target.value;
+                  props.setGodChoice(copy);
+                }}/>놀이터</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="교실"/>교실</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="교실" onClick={(e) => {
+                  let copy = props.godChoice;
+                  copy.godPlace = e.target.value;
+                  props.setGodChoice(copy);
+                }}/>교실</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="기숙사"/>기숙사</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="기숙사" onClick={(e) => {
+                  let copy = props.godChoice;
+                  copy.godPlace = e.target.value;
+                  props.setGodChoice(copy);
+                }}/>기숙사</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="구내식당"/>구내식당</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="구내식당" onClick={(e) => {
+                  let copy = props.godChoice;
+                  copy.godPlace = e.target.value;
+                  props.setGodChoice(copy);
+                }}/>구내식당</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="엘리베이터"/>엘리베이터</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="엘리베이터" onClick={(e) => {
+                  let copy = props.godChoice;
+                  copy.godPlace = e.target.value;
+                  props.setGodChoice(copy);
+                }}/>엘리베이터</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="공중화잘실"/>공중화잘실</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="공중화잘실" onClick={(e) => {
+                  let copy = props.godChoice;
+                  copy.godPlace = e.target.value;
+                  props.setGodChoice(copy);
+                }}/>공중화잘실</label>
               </div>
               <br/>
               <span>그룹 2&nbsp;&nbsp;&nbsp;</span>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="거실"/>거실</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="거실" onClick={(e) => {
+                  let copy = props.godChoice;
+                  copy.godPlace = e.target.value;
+                  props.setGodChoice(copy);
+                }}/>거실</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="침실"/>침실</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="침실" onClick={(e) => {
+                  let copy = props.godChoice;
+                  copy.godPlace = e.target.value;
+                  props.setGodChoice(copy);
+                }}/>침실</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="창고"/>창고</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="창고" onClick={(e) => {
+                  let copy = props.godChoice;
+                  copy.godPlace = e.target.value;
+                  props.setGodChoice(copy);
+                }}/>창고</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="화장실"/>화장실</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="화장실" onClick={(e) => {
+                  let copy = props.godChoice;
+                  copy.godPlace = e.target.value;
+                  props.setGodChoice(copy);
+                }}/>화장실</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="부엌"/>부엌</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="부엌" onClick={(e) => {
+                  let copy = props.godChoice;
+                  copy.godPlace = e.target.value;
+                  props.setGodChoice(copy);
+                }}/>부엌</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="발코니"/>발코니</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="발코니" onClick={(e) => {
+                  let copy = props.godChoice;
+                  copy.godPlace = e.target.value;
+                  props.setGodChoice(copy);
+                }}/>발코니</label>
               </div>
               <br/>
               <span>그룹 3&nbsp;&nbsp;&nbsp;</span>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="별장"/>별장</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="별장" onClick={(e) => {
+                  let copy = props.godChoice;
+                  copy.godPlace = e.target.value;
+                  props.setGodChoice(copy);
+                }}/>별장</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="공원"/>공원</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="공원" onClick={(e) => {
+                  let copy = props.godChoice;
+                  copy.godPlace = e.target.value;
+                  props.setGodChoice(copy);
+                }}/>공원</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="슈퍼마켓"/>슈퍼마켓</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="슈퍼마켓" onClick={(e) => {
+                  let copy = props.godChoice;
+                  copy.godPlace = e.target.value;
+                  props.setGodChoice(copy);
+                }}/>슈퍼마켓</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="학교"/>학교</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="학교" onClick={(e) => {
+                  let copy = props.godChoice;
+                  copy.godPlace = e.target.value;
+                  props.setGodChoice(copy);
+                }}/>학교</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="숲속"/>숲속</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="숲속" onClick={(e) => {
+                  let copy = props.godChoice;
+                  copy.godPlace = e.target.value;
+                  props.setGodChoice(copy);
+                }}/>숲속</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="은행"/>은행</label>
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="은행" onClick={(e) => {
+                  let copy = props.godChoice;
+                  copy.godPlace = e.target.value;
+                  props.setGodChoice(copy);
+                }}/>은행</label>
               </div>
             </Form.Group>
             <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
@@ -130,17 +226,17 @@ function GodChooseModal(props) {
               <br/>
               {
                 hintArrayIndex.map((data1, i) => (
-                    <div>
+                    <div key = {i}>
                         <span>{props.hint[data1]?.title}&nbsp;&nbsp;&nbsp;</span>
                         {props.hint[data1]?.content.map((data2, j) => (
-                            <div className="form-check form-check-inline">
-                                <label className="form-check-label"><input className="form-check-input" type="radio" name={props.hint[data1] + i} value={data2}/>{data2}</label>
+                            <div className="form-check form-check-inline" key = {j}>
+                                <label className="form-check-label"><input className="form-check-input" type="radio" name={props.hint[data1] + i} value={data2} onClick={(e) => {
+                                    let copy = props.godChoice;
+                                    copy.godHint[i] = {title: props.hint[data1].title, content: e.target.value};
+                                    props.setGodChoice(copy);
+                                }}/>{data2}</label>
                             </div>
                         ))}
-                        {/* <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name={"현장힌트"+i} id={props.hint[data] + i} value={"option" + i}/>
-                            <label className="form-check-label" for={props.hint[data] + i}>발코니</label>
-                        </div> */}
                     </div>
                 ))
               }
@@ -148,7 +244,10 @@ function GodChooseModal(props) {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={props.handleCloseGodChoose}>
+          <Button variant="primary" onClick={() => {
+            console.log(props.godChoice)
+            props.handleCloseGodChoose()
+          }}>
             완료
           </Button>
         </Modal.Footer>

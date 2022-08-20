@@ -21,7 +21,7 @@ function Deception(props) {
   const [seconds, setSeconds] = useState(30)
   const [timer, setTimer] = useState(false)
   const [answer, setAnswer] = useState({blue: '', red: ''});
-  const [godChoice, setGodChoice] = useState({});
+  const [godChoice, setGodChoice] = useState({godCause: '', godPlace: '', godHint: new Array(6)});
   const [showGodChoose, setShowGodChoose] = useState(false);
   const [showMurdererChoose, setShowMurdererChoose] = useState(false);
   const { roomNumber } = useParams();
@@ -202,7 +202,7 @@ function Deception(props) {
             <div className='middle' style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
               {users.length<5? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+4)%(users.length)]}/>}
               <div style={{width: "800px", height: "250px", margin: "0px 55px", border: "1px solid #111"}}>
-                <GodChooseModal showGodChoose={showGodChoose} handleCloseGodChoose={handleCloseGodChoose} hint={hint} />
+                <GodChooseModal showGodChoose={showGodChoose} handleCloseGodChoose={handleCloseGodChoose} hint={hint} godChoice={godChoice} setGodChoice={setGodChoice} />
                 <MurdererChooseModal showMurdererChoose={showMurdererChoose} handleCloseMurdererChoose={handleCloseMurdererChoose} user={users[userIndex]} answer={answer} setAnswer={setAnswer} />
               </div>
               {users.length<6? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+5)%(users.length)]}/>}

@@ -83,6 +83,7 @@ function MurdererChooseModal(props) {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={() => {
+            console.log(props.answer)
             props.handleCloseMurdererChoose()
         }}>
             완료
