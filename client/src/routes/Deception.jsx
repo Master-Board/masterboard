@@ -16,20 +16,22 @@ function Deception(props) {
   const [message, setMessage] = useState('');
   const [text, setText] = useState('');
   const [broadcast, setBroadcast] = useState('살인자가 선택중입니다');
-  const [messages, setMessages] = useState([{name: "형진", message: "hi"}, {name: "형진", message: "hello"}]);
+  const [messages, setMessages] = useState([]);
   const [minutes, setMinutes] = useState(2)
   const [seconds, setSeconds] = useState(30)
   const [timer, setTimer] = useState(false)
-  const [answer, setAnswer] = useState({blue: '', red: ''});
-  const [godChoice, setGodChoice] = useState({godCause: '', godPlace: '', godHint: new Array(6)});
+  const [answer, setAnswer] = useState({means: '', clue: ''});
+  const [godChoice, setGodChoice] = useState({godCause: '', godPlace: '', godHint: [{title: '', content: ''}, {title: '', content: ''}, {title: '', content: ''}, {title: '', content: ''}]});
   const [showGodChoose, setShowGodChoose] = useState(false);
   const [showMurdererChoose, setShowMurdererChoose] = useState(false);
   const { roomNumber } = useParams();
   let userIndex=1;
+  const [placeIndex, setPlaceIndex] = useState(0);
+  const [hintIndex, setHintIndex] = useState([0, 0, 0, 0])
 
-  const [users, setUsers] = useState([{name: "창현", job: null, blue: [12, 42, 53, 13], red: [2, 43, 25, 83]}, {name: "형진", job: null, blue: [54, 62, 11, 40], red: [1, 3, 4, 5]}, {name: "민호", job: null, blue: [6, 7, 8, 9], red: [6, 7, 8, 9]}, {name: "박철", job: null, blue: [10, 11, 12, 13], red: [14, 15, 16, 17]}]);
+  const [users, setUsers] = useState([{name: "창현", job: null, means: [12, 42, 53, 13], clue: [2, 43, 25, 83]}, {name: "형진", job: null, means: [54, 62, 11, 40], clue: [1, 3, 4, 5]}, {name: "민호", job: null, means: [6, 7, 8, 9], clue: [6, 7, 8, 9]}, {name: "박철", job: null, means: [10, 11, 12, 13], clue: [14, 15, 16, 17]}]);
   const cause = ['질식', '중상', '과다출혈', '질병', '독살', '사고사']
-  const place = [['놀이터', '교실', '기숙사', '구내식당', '엘리베이터', '공중화잘실'], ['거실', '침실', '창고', '화장실', '부엌', '발코니'], ['별장', '공원', '슈퍼마켓', '학교', '숲속', '은행']]
+  const place = [['놀이터', '교실', '기숙사', '구내식당', '엘리베이터', '공중화장실'], ['거실', '침실', '창고', '화장실', '부엌', '발코니'], ['별장', '공원', '슈퍼마켓', '학교', '숲속', '은행'], ['호프집', '서점', '식당', '호텔', '병원', '건설 현장']]
   const hint = [{title: '피해자의 신체특성', content: ['큰 체격', '마름', '키가 큼', '키가 작음', '장애가 있음', '보통의 체격']}, 
                 {title: '현장에 남겨진 흔적', content: ['지문', '발자국', '타박상', '핏자국', '체액', '흉터']},
                 {title: '살인자의 성격', content: ['오만한', '비열한', '다혈질', '탐욕스러운', '강압적', '변태적']},
@@ -91,12 +93,27 @@ function Deception(props) {
     })
   }, [])
 
-  // share에 정보 업데이트
+  // 가운데에 정보 업데이트
   useEffect(() => {
-    socket.on("godChoice", (data) => {
-
+    socket.on("deceptionGodChoice", (data) => {
+      setGodChoice(data)
+      for(let i = 0; i < place.length; i++){
+        if(place[i].includes(godChoice.godPlace)){
+          setPlaceIndex(i)
+        }
+      }
+      for(let i = 0; i < 4; i++){
+        for(let j = 0; j < hint.length; j++){
+          if(hint[j].title == godChoice.godHint[i].title){
+            let copy = hintIndex;
+            copy[i] = j;
+            setHintIndex(copy);
+            console.log(hintIndex)
+          }
+        }
+      }
     })
-  })
+  }, [godChoice, godChoice.godPlace, godChoice.godHint, placeIndex, hintIndex])
 
   useEffect(() => {
     for(let i = 0; i < users.length; i++){
@@ -175,7 +192,7 @@ function Deception(props) {
         <button onClick={()=>setChatting(!chatting)}>채팅</button>
         <span>{broadcast} </span>
         <span>{minutes}:{seconds < 10? `0${seconds}` : seconds}</span>
-        <button onClick={()=>handleShowGodChoose()}>준비</button>
+        <button onClick={()=>handleShowMurdererChoose()}>준비</button>
         <button onClick={Disconnect}><Link to="/mainpage">나가기</Link></button>
         <div style={{display: "flex", position: "relative"}}>
           {chatting === true ? 
@@ -201,9 +218,20 @@ function Deception(props) {
             </div>
             <div className='middle' style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
               {users.length<5? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+4)%(users.length)]}/>}
-              <div style={{width: "800px", height: "250px", margin: "0px 55px", border: "1px solid #111"}}>
-                <GodChooseModal showGodChoose={showGodChoose} handleCloseGodChoose={handleCloseGodChoose} hint={hint} godChoice={godChoice} setGodChoice={setGodChoice} />
-                <MurdererChooseModal showMurdererChoose={showMurdererChoose} handleCloseMurdererChoose={handleCloseMurdererChoose} user={users[userIndex]} answer={answer} setAnswer={setAnswer} />
+              <div style={{width: "800px", height: "250px", margin: "0px 55px", border: "1px solid #111", display: "flex", justifyContent: "center", alignItems: "center"}}>
+                <div style={{width: "110px", height: "230px", margin: "10px 10px 10px 0px"}}>
+                  <img src={require(`../img/사인.png`)} alt="사인" width="130px" height="230px"/>
+                </div>
+                <div style={{width: "110px", height: "230px", margin: "10px 10px"}}>
+                  <img src={require(`../img/장소${placeIndex}.png`)} alt="장소" width="130px" height="230px"/></div>
+                <div style={{width: "110px", height: "230px", margin: "10px 10px"}}>
+                  <img src={require(`../img/현장${hintIndex[0]}.png`)} alt="현장" width="130px" height="230px"/></div>
+                <div style={{width: "110px", height: "230px", margin: "10px 10px"}}>
+                  <img src={require(`../img/현장${hintIndex[1]}.png`)} alt="현장" width="130px" height="230px"/></div>
+                <div style={{width: "110px", height: "230px", margin: "10px 10px"}}>
+                  <img src={require(`../img/현장${hintIndex[2]}.png`)} alt="현장" width="130px" height="230px"/></div>
+                <div style={{width: "110px", height: "230px", margin: "10px 10px"}}>
+                  <img src={require(`../img/현장${hintIndex[3]}.png`)} alt="현장" width="130px" height="230px"/></div>
               </div>
               {users.length<6? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+5)%(users.length)]}/>}
             </div>
@@ -216,6 +244,8 @@ function Deception(props) {
             </div>
           </div>
         </div>
+        <GodChooseModal showGodChoose={showGodChoose} handleCloseGodChoose={handleCloseGodChoose} hint={hint} godChoice={godChoice} setGodChoice={setGodChoice} socket={socket} />
+        <MurdererChooseModal showMurdererChoose={showMurdererChoose} handleCloseMurdererChoose={handleCloseMurdererChoose} user={users[userIndex]} answer={answer} setAnswer={setAnswer} socket={socket} room={room} />
       </div>
     );
   }

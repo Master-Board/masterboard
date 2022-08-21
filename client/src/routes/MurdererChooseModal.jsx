@@ -21,62 +21,62 @@ function MurdererChooseModal(props) {
               </Form.Label>
               <br />
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="blue" value={props.user.blue[0]} onClick={(e)=>{
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="means" value={props.user.means[0]} onClick={(e)=>{
                     let copy = props.answer;
-                    copy.blue = e.target.value;
+                    copy.means = e.target.value;
                     props.setAnswer(copy);
-                }} />{props.user.blue[0]}</label>
+                }} />{props.user.means[0]}</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="blue" value={props.user.blue[1]} onClick={(e)=>{
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="means" value={props.user.means[1]} onClick={(e)=>{
                     let copy = props.answer;
-                    copy.blue = e.target.value;
+                    copy.means = e.target.value;
                     props.setAnswer(copy);
-                }}/>{props.user.blue[1]}</label>
+                }}/>{props.user.means[1]}</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="blue" value={props.user.blue[2]} onClick={(e)=>{
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="means" value={props.user.means[2]} onClick={(e)=>{
                     let copy = props.answer;
-                    copy.blue = e.target.value;
+                    copy.means = e.target.value;
                     props.setAnswer(copy);
-                }}/>{props.user.blue[2]}</label>
+                }}/>{props.user.means[2]}</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="blue" value={props.user.blue[3]} onClick={(e)=>{
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="means" value={props.user.means[3]} onClick={(e)=>{
                     let copy = props.answer;
-                    copy.blue = e.target.value;
+                    copy.means = e.target.value;
                     props.setAnswer(copy);
-                }}/>{props.user.blue[3]}</label>
+                }}/>{props.user.means[3]}</label>
               </div>
 
               <br />
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="red" value={props.user.red[0]} onClick={(e)=>{
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="clue" value={props.user.clue[0]} onClick={(e)=>{
                     let copy = props.answer;
-                    copy.red = e.target.value;
+                    copy.clue = e.target.value;
                     props.setAnswer(copy);
-                }}/>{props.user.red[0]}</label>
+                }}/>{props.user.clue[0]}</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="red" value={props.user.red[1]} onClick={(e)=>{
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="clue" value={props.user.clue[1]} onClick={(e)=>{
                     let copy = props.answer;
-                    copy.red = e.target.value;
+                    copy.clue = e.target.value;
                     props.setAnswer(copy);
-                }}/>{props.user.red[1]}</label>
+                }}/>{props.user.clue[1]}</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="red" value={props.user.red[2]} onClick={(e)=>{
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="clue" value={props.user.clue[2]} onClick={(e)=>{
                     let copy = props.answer;
-                    copy.red = e.target.value;
+                    copy.clue = e.target.value;
                     props.setAnswer(copy);
-                }}/>{props.user.red[2]}</label>
+                }}/>{props.user.clue[2]}</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="red" value={props.user.red[3]} onClick={(e)=>{
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="clue" value={props.user.clue[3]} onClick={(e)=>{
                     let copy = props.answer;
-                    copy.red = e.target.value;
+                    copy.clue = e.target.value;
                     props.setAnswer(copy);
-                }}/>{props.user.red[3]}</label>
+                }}/>{props.user.clue[3]}</label>
               </div>
             </Form.Group>
           </Form>
@@ -84,6 +84,7 @@ function MurdererChooseModal(props) {
         <Modal.Footer>
           <Button variant="primary" onClick={() => {
             console.log(props.answer)
+            props.socket.emit("deceptionMurdererChoice", {room: props.room, means: props.answer.means, clue: props.answer.clue})
             props.handleCloseMurdererChoose()
         }}>
             완료

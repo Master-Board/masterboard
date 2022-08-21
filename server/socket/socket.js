@@ -291,7 +291,7 @@ module.exports = (server) => {
         socket.on('deceptionMurdererChoice',(data)=>{ 
             const{room, means, clue} = data
             deception_murder_means = means
-            deception_murder_clue -clue
+            deception_murder_clue = clue
             socket.to(room).emit('deceptionMurdererChoice',{
                 data
             })
@@ -299,7 +299,7 @@ module.exports = (server) => {
     
         socket.on('deceptionGodChoice',(data)=>{ 
             const{room} = data
-            socket.to(room).emit('deceptionMurdererChoice',{
+            socket.to(room).emit('deceptionGodChoice',{
                 data
             })
         })

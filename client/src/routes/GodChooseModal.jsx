@@ -232,7 +232,8 @@ function GodChooseModal(props) {
                             <div className="form-check form-check-inline" key = {j}>
                                 <label className="form-check-label"><input className="form-check-input" type="radio" name={props.hint[data1] + i} value={data2} onClick={(e) => {
                                     let copy = props.godChoice;
-                                    copy.godHint[i] = {title: props.hint[data1].title, content: e.target.value};
+                                    copy.godHint[i].title = props.hint[data1].title
+                                    copy.godHint[i].content = e.target.value
                                     props.setGodChoice(copy);
                                 }}/>{data2}</label>
                             </div>
@@ -246,6 +247,7 @@ function GodChooseModal(props) {
         <Modal.Footer>
           <Button variant="primary" onClick={() => {
             console.log(props.godChoice)
+            props.socket.emit("deceptionGodChoice", {})
             props.handleCloseGodChoose()
           }}>
             완료
