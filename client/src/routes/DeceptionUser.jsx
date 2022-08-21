@@ -5,8 +5,8 @@ function DeceptionUser(props) {
     const [btnClick, setBtnClick] = useState([false, false, false, false, false, false, false, false]);
 
   return props.user == null ? 
-    (<div style={{width: "270px", height: " 180px", border: "1px solid #111", margin: "20px 17px"}}>
-        <div style={{margin: "5px 0px"}}>empty</div>
+    (<div style={{width: "270px", height: " 180px", margin: "20px 17px"}}>
+        {/* <div style={{margin: "5px 0px"}}>empty</div>
         <div className='단서' style={{display:"flex"}}>
             <div style={{width: "60px", height: "60px", border: "1px solid #000", margin: "5px 5px"}}></div>
             <div style={{width: "60px", height: "60px", border: "1px solid #000", margin: "5px 5px"}}></div>
@@ -18,7 +18,7 @@ function DeceptionUser(props) {
             <div style={{width: "60px", height: "60px", border: "1px solid #000", margin: "5px 5px"}}></div>
             <div style={{width: "60px", height: "60px", border: "1px solid #000", margin: "5px 5px"}}></div>
             <div style={{width: "60px", height: "60px", border: "1px solid #000", margin: "5px 5px"}}></div>
-        </div>
+        </div> */}
     </div>) :
     (<div style={{width: "270px", height: " 180px", border: "1px solid #111", margin: "20px 17px"}}>
       <div style={{margin: "5px 0px"}}>{props.user.name}</div>

@@ -4,6 +4,7 @@ import io from "socket.io-client";
 import DeceptionUser from './DeceptionUser';
 import GodChooseModal from './GodChooseModal';
 import MurdererChooseModal from './MurdererChooseModal';
+import xImage from '../img/x.png'
 
 let socket;
 
@@ -17,8 +18,8 @@ function Deception(props) {
   const [text, setText] = useState('');
   const [broadcast, setBroadcast] = useState('살인자가 선택중입니다');
   const [messages, setMessages] = useState([]);
-  const [minutes, setMinutes] = useState(2)
-  const [seconds, setSeconds] = useState(30)
+  const [minutes, setMinutes] = useState(0)
+  const [seconds, setSeconds] = useState(0)
   const [timer, setTimer] = useState(false)
   const [answer, setAnswer] = useState({means: '', clue: ''});
   const [godChoice, setGodChoice] = useState({godCause: '', godPlace: '', godHint: [{title: '', content: ''}, {title: '', content: ''}, {title: '', content: ''}, {title: '', content: ''}]});
@@ -95,24 +96,28 @@ function Deception(props) {
 
   // 가운데에 정보 업데이트
   useEffect(() => {
-    socket.on("deceptionGodChoice", (data) => {
-      setGodChoice(data)
-      for(let i = 0; i < place.length; i++){
-        if(place[i].includes(godChoice.godPlace)){
-          setPlaceIndex(i)
+    // socket.on("deceptionGodChoice", (data) => {
+    //   setGodChoice(data)
+      
+    // })
+    
+    // 장소
+    for(let i = 0; i < place.length; i++){
+      if(place[i].includes(godChoice.godPlace)){
+        setPlaceIndex(i)
+      }
+    }
+    // 현장
+    for(let i = 0; i < 4; i++){
+      for(let j = 0; j < hint.length; j++){
+        if(hint[j].title == godChoice.godHint[i].title){
+          let copy = hintIndex;
+          copy[i] = j;
+          setHintIndex(copy);
+          console.log(hintIndex)
         }
       }
-      for(let i = 0; i < 4; i++){
-        for(let j = 0; j < hint.length; j++){
-          if(hint[j].title == godChoice.godHint[i].title){
-            let copy = hintIndex;
-            copy[i] = j;
-            setHintIndex(copy);
-            console.log(hintIndex)
-          }
-        }
-      }
-    })
+    }
   }, [godChoice, godChoice.godPlace, godChoice.godHint, placeIndex, hintIndex])
 
   useEffect(() => {
@@ -187,65 +192,79 @@ function Deception(props) {
   }
 
   return (
-      <div id="deception" style={{backgroundImage: 'url(../public/img/background.webp)', backgroundSize: 'cover'}}>
-        {user}님 어서오세요! #{room} 디셉션 방입니다
-        <button onClick={()=>setChatting(!chatting)}>채팅</button>
-        <span>{broadcast} </span>
-        <span>{minutes}:{seconds < 10? `0${seconds}` : seconds}</span>
-        <button onClick={()=>handleShowMurdererChoose()}>준비</button>
-        <button onClick={Disconnect}><Link to="/mainpage">나가기</Link></button>
-        <div style={{display: "flex", position: "relative"}}>
-          {chatting === true ? 
-            <div style={{width: "300px", height: "600px", border: "2px solid #111", position: "absolute", background: "#fff"}}>
-              <div style={{backgroundColor: "#eee"}}>Room : {room}</div>
-              <div className="messages" style={{width: "290px", height: "540px", border: "1px solid #111", overflow: "scroll"}}>
-                {messages.map((data, i) => (
-                  <div key={i} >
-                    <div>{data.name} : {data.message}</div>
-                  </div>
-                ))}
-              </div>
-              <input type="text" placeholder="메세지를 입력하세요" onChange={(e)=>setText(e.target.value)} value={text} onKeyPress={(e)=>(e.key === "Enter" ? sendMessage() : null)} />
-              <button onClick={()=>sendMessage()}>send</button>
-            </div> : null}
-          <div className='gameboard' style={{textAlign: "center", width: "1540px", height: "690px"}}>
-            <div className='top' style={{display: "flex"}}>
-              {users.length<7? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+6)%(users.length)]}/>}
-              <DeceptionUser user={users[(userIndex+1)%(users.length)]}/>
-              <DeceptionUser user={users[(userIndex+2)%(users.length)]}/>
-              <DeceptionUser user={users[(userIndex+3)%(users.length)]}/>
-              {users.length<8? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+7)%(users.length)]}/>}
-            </div>
-            <div className='middle' style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
-              {users.length<5? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+4)%(users.length)]}/>}
-              <div style={{width: "800px", height: "250px", margin: "0px 55px", border: "1px solid #111", display: "flex", justifyContent: "center", alignItems: "center"}}>
-                <div style={{width: "110px", height: "230px", margin: "10px 10px 10px 0px"}}>
-                  <img src={require(`../img/사인.png`)} alt="사인" width="130px" height="230px"/>
+      <div id="deception" style={{backgroundImage: 'url(../public/img/background.webp)', backgroundSize: 'cover', position: 'relative'}}>
+        <img src={require(`../img/background.webp`)} style={{display: "block", width: "100%", height: "auto"}} />
+        <div style={{position: "absolute", left: '0px', top: '0px'}}>
+          {user}님 어서오세요! #{room} 디셉션 방입니다
+          <button onClick={()=>setChatting(!chatting)}>채팅</button>
+          <span>{broadcast} </span>
+          <span>{minutes}:{seconds < 10? `0${seconds}` : seconds}</span>
+          <button onClick={()=>handleShowGodChoose()}>준비</button>
+          <button onClick={Disconnect}><Link to="/mainpage">나가기</Link></button>
+          <div style={{display: "flex", position: "relative"}}>
+            {chatting === true ? 
+              <div style={{width: "300px", height: "600px", border: "2px solid #111", position: "absolute", background: "#fff"}}>
+                <div style={{backgroundColor: "#eee"}}>Room : {room}</div>
+                <div className="messages" style={{width: "290px", height: "540px", border: "1px solid #111", overflow: "scroll"}}>
+                  {messages.map((data, i) => (
+                    <div key={i} >
+                      <div>{data.name} : {data.message}</div>
+                    </div>
+                  ))}
                 </div>
-                <div style={{width: "110px", height: "230px", margin: "10px 10px"}}>
-                  <img src={require(`../img/장소${placeIndex}.png`)} alt="장소" width="130px" height="230px"/></div>
-                <div style={{width: "110px", height: "230px", margin: "10px 10px"}}>
-                  <img src={require(`../img/현장${hintIndex[0]}.png`)} alt="현장" width="130px" height="230px"/></div>
-                <div style={{width: "110px", height: "230px", margin: "10px 10px"}}>
-                  <img src={require(`../img/현장${hintIndex[1]}.png`)} alt="현장" width="130px" height="230px"/></div>
-                <div style={{width: "110px", height: "230px", margin: "10px 10px"}}>
-                  <img src={require(`../img/현장${hintIndex[2]}.png`)} alt="현장" width="130px" height="230px"/></div>
-                <div style={{width: "110px", height: "230px", margin: "10px 10px"}}>
-                  <img src={require(`../img/현장${hintIndex[3]}.png`)} alt="현장" width="130px" height="230px"/></div>
+                <input type="text" placeholder="메세지를 입력하세요" onChange={(e)=>setText(e.target.value)} value={text} onKeyPress={(e)=>(e.key === "Enter" ? sendMessage() : null)} />
+                <button onClick={()=>sendMessage()}>send</button>
+              </div> : null}
+            <div className='gameboard' style={{textAlign: "center", width: "1540px", height: "690px"}}>
+              <div className='top' style={{display: "flex"}}>
+                {users.length<7? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+6)%(users.length)]}/>}
+                <DeceptionUser user={users[(userIndex+1)%(users.length)]}/>
+                <DeceptionUser user={users[(userIndex+2)%(users.length)]}/>
+                <DeceptionUser user={users[(userIndex+3)%(users.length)]}/>
+                {users.length<8? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+7)%(users.length)]}/>}
               </div>
-              {users.length<6? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+5)%(users.length)]}/>}
-            </div>
-            <div className='bottom' style={{display: "flex"}}>
-              {users.length<9? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+8)%(users.length)]}/>}
-              {users.length<11? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+10)%(users.length)]}/>}
-              <DeceptionUser user={users[userIndex]}/>
-              {users.length<12? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+11)%(users.length)]}/>}
-              {users.length<10? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+9)%(users.length)]}/>}
+              <div className='middle' style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+                {users.length<5? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+4)%(users.length)]}/>}
+                <div style={{width: "800px", height: "250px", margin: "0px 55px", display: "flex", justifyContent: "center", alignItems: "center"}}>
+                  <div style={{width: "110px", height: "230px", margin: "10px 10px 10px 0px", position: "relative"}}>
+                    <img src={require(`../img/사인.png`)} alt="사인" width="130px" height="230px"/>
+                    <img src={require(`../img/x.png`)} style={{position: "absolute", width: "15px", height: "15px", left: "25px", top: `${40+cause.indexOf(godChoice.godCause)*33.5}px`}} />
+                  </div>
+                  <div style={{width: "110px", height: "230px", margin: "10px 10px", position: "relative"}}>
+                    <img src={require(`../img/장소${placeIndex}.png`)} alt="장소" width="130px" height="230px"/>
+                    <img src={require(`../img/x.png`)} style={{position: "absolute", width: "15px", height: "15px", left: "25px", top: `${40+place[placeIndex].indexOf(godChoice.godPlace)*33.5}px`}} />
+                  </div>
+                  <div style={{width: "110px", height: "230px", margin: "10px 10px", position: "relative"}}>
+                    <img src={require(`../img/현장${hintIndex[0]}.png`)} alt="현장" width="130px" height="230px"/>
+                    <img src={require(`../img/x.png`)} style={{position: "absolute", width: "15px", height: "15px", left: "25px", top: `${40+hint[hintIndex[0]].content.indexOf(godChoice.godHint[0].content)*33.5}px`}} />
+                  </div>
+                  <div style={{width: "110px", height: "230px", margin: "10px 10px", position: "relative"}}>
+                    <img src={require(`../img/현장${hintIndex[1]}.png`)} alt="현장" width="130px" height="230px"/>
+                    <img src={require(`../img/x.png`)} style={{position: "absolute", width: "15px", height: "15px", left: "25px", top: `${40+hint[hintIndex[1]].content.indexOf(godChoice.godHint[1].content)*33.5}px`}} />
+                  </div>
+                  <div style={{width: "110px", height: "230px", margin: "10px 10px", position: "relative"}}>
+                    <img src={require(`../img/현장${hintIndex[2]}.png`)} alt="현장" width="130px" height="230px"/>
+                    <img src={require(`../img/x.png`)} style={{position: "absolute", width: "15px", height: "15px", left: "25px", top: `${40+hint[hintIndex[2]].content.indexOf(godChoice.godHint[2].content)*33.5}px`}} />
+                  </div>
+                  <div style={{width: "110px", height: "230px", margin: "10px 10px", position: "relative"}}>
+                    <img src={require(`../img/현장${hintIndex[3]}.png`)} alt="현장" width="130px" height="230px"/>
+                    <img src={require(`../img/x.png`)} style={{position: "absolute", width: "15px", height: "15px", left: "25px", top: `${40+hint[hintIndex[3]].content.indexOf(godChoice.godHint[3].content)*33.5}px`}} />
+                  </div>
+                </div>
+                {users.length<6? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+5)%(users.length)]}/>}
+              </div>
+              <div className='bottom' style={{display: "flex"}}>
+                {users.length<9? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+8)%(users.length)]}/>}
+                {users.length<11? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+10)%(users.length)]}/>}
+                <DeceptionUser user={users[userIndex]}/>
+                {users.length<12? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+11)%(users.length)]}/>}
+                {users.length<10? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+9)%(users.length)]}/>}
+              </div>
             </div>
           </div>
+          <GodChooseModal showGodChoose={showGodChoose} handleCloseGodChoose={handleCloseGodChoose} hint={hint} godChoice={godChoice} setGodChoice={setGodChoice} socket={socket} />
+          <MurdererChooseModal showMurdererChoose={showMurdererChoose} handleCloseMurdererChoose={handleCloseMurdererChoose} user={users[userIndex]} answer={answer} setAnswer={setAnswer} socket={socket} room={room} />
         </div>
-        <GodChooseModal showGodChoose={showGodChoose} handleCloseGodChoose={handleCloseGodChoose} hint={hint} godChoice={godChoice} setGodChoice={setGodChoice} socket={socket} />
-        <MurdererChooseModal showMurdererChoose={showMurdererChoose} handleCloseMurdererChoose={handleCloseMurdererChoose} user={users[userIndex]} answer={answer} setAnswer={setAnswer} socket={socket} room={room} />
       </div>
     );
   }

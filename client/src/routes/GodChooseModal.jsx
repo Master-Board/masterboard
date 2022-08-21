@@ -126,11 +126,11 @@ function GodChooseModal(props) {
                 }}/>엘리베이터</label>
               </div>
               <div className="form-check form-check-inline">
-                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="공중화잘실" onClick={(e) => {
+                <label className="form-check-label"><input className="form-check-input" type="radio" name="장소" value="공중화장실" onClick={(e) => {
                   let copy = props.godChoice;
                   copy.godPlace = e.target.value;
                   props.setGodChoice(copy);
-                }}/>공중화잘실</label>
+                }}/>공중화장실</label>
               </div>
               <br/>
               <span>그룹 2&nbsp;&nbsp;&nbsp;</span>
