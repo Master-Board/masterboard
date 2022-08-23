@@ -1,7 +1,5 @@
 const Socketio = require('socket.io')
 const moment = require('moment')
-let deception_info = [{room:0}, {deception_player: []} ,{deception_clue_deck}, {deception_means_deck}, 
-{deception_clue},{deception_means},{deception_murderer}, {deception_murder_means}, {deception_murder_clue}]
 let deception_player = []
 let deception_clue_deck //deception의 단서카드 정보 ex) 사용자의 단서카드 값 = 4라면 clue_deck의 5번째 정보를 참조하면 됨.
 let deception_means_deck //deception 수단카드 정보. 위와 마찬가지.
@@ -10,6 +8,8 @@ let deception_means // deception에 실제 사용되는 단서카드
 let deception_murderer //살인자 플레이어 닉네임 혹은 번호
 let deception_murder_means // 살인자 수단카드 번호
 let deception_murder_clue //살인자 단서카드 번호
+let deception_info = [{room:0}, {deception_player: []} ,{deception_clue_deck}, {deception_means_deck}, 
+{deception_clue},{deception_means},{deception_murderer}, {deception_murder_means}, {deception_murder_clue}]
 function swap(a,b) {
     let tmp = a
     a = b
