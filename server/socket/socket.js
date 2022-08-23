@@ -1,5 +1,7 @@
 const Socketio = require('socket.io')
 const moment = require('moment')
+let deception_info = [{room:0}, {deception_player: []} ,{deception_clue_deck}, {deception_means_deck}, 
+{deception_clue},{deception_means},{deception_murderer}, {deception_murder_means}, {deception_murder_clue}]
 let deception_player = []
 let deception_clue_deck //deception의 단서카드 정보 ex) 사용자의 단서카드 값 = 4라면 clue_deck의 5번째 정보를 참조하면 됨.
 let deception_means_deck //deception 수단카드 정보. 위와 마찬가지.
@@ -210,19 +212,18 @@ module.exports = (server) => {
         })
     
         socket.on('deceptionJoin',(data) => {
-            let room = data.room    
+            let {room, name} = data
             console.log('data: ',data)
-            let player_form = {name: '', ready: false, job: 'detective', clue: [], means: []}
+            let player_form = {name: name, ready: false, job: 'detective', clue: [], means: []}
             if (data.room != '') {
                 socket.join(room)
 
                 console.log(room+'번 방 join 완료!')
-                player_form.socketId = socket.id
                 deception_player.push(player_form)
 
                 console.log('플레이어: ',deception_player)
 
-                socket.to(room).emit('joindeception',{
+                socket.to(room).emit('deceptionJoin',{
                     deception_player
                 })
             }
@@ -232,13 +233,16 @@ module.exports = (server) => {
         })
 
         socket.on('deceptionReady',(data) => {
-            const {player, room} = data
+            const {user, room} = data
+            let msg // 유저가 준비한지 여부
             p = {a:{},b:{},c:{}}
-            if(deception_player[deception_player.indexof(player)].ready == true) {
-                deception_player[deception_player.indexof(player)].ready = false
+            if(deception_player[deception_player.indexof(user)].ready == true) {
+                deception_player[deception_player.indexof(user)].ready = false
+                msg = '레디 해제'
             } 
             else{
-                deception_player[deception_player.indexof(player)].ready == false
+                deception_player[deception_player.indexof(user)].ready == true
+                msg = '레디 완료'
             }
             let not_ready = 0
             for(let i=0;i<deception_player.length;i++){
@@ -246,17 +250,19 @@ module.exports = (server) => {
                     not_ready += 1
                 }
             }
-            let ready
+            let ready // 모두 준비 되었는지 여부
             if(not_ready == 0) { //모두 준비 완료되면
                 ready = true
                 socket.to(room).emit('deceptionReady',{
-                    ready
+                    ready,
+                    msg
                 })
             }
             else{ //한명이라도 준비가 안되면
                 ready = false
                 socket.to(room).emit('deceptionReady',{
-                    ready
+                    ready,
+                    msg
                 })
             }
         })
@@ -273,7 +279,8 @@ module.exports = (server) => {
         })
     
         socket.on('deceptionStart',(data) => {//게임 시작(카드 덱 설정)
-            let {room,personnel,card_count} = data
+            let {room,card_count} = data
+            let personnel = deception_player.length
             //초기 덱 설정
             [deception_clue_deck, deception_means_deck] = deception_init_game()
             //직업정하기
@@ -298,7 +305,7 @@ module.exports = (server) => {
         })
     
         socket.on('deceptionGodChoice',(data)=>{ 
-            const{room} = data
+            const{room} = data.room
             socket.to(room).emit('deceptionGodChoice',{
                 data
             })
@@ -307,7 +314,7 @@ module.exports = (server) => {
 
         socket.on('deceptionTime',(data)=>{ //시간 증감 고민중.
             const{room, time} = data
-            socket.broadcast.to(room).emit('deceptionTime', {
+            socket.to(room).emit('deceptionTime', {
                 time
             })
         })
