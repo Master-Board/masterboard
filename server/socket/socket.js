@@ -339,7 +339,7 @@ module.exports = (server) => {
             let {room, name} = data
             //let card_count = 4
             console.log('data: ',data)
-            let player_form = {name: name, ready: false, job: 'detective', clue: [], means: []}
+            let player_form = {name: name, ready: false, job: '수사관', clue: [], means: []}
             if (data.room != '') {
                 socket.join(room)
 
