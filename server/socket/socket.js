@@ -226,30 +226,23 @@ function deception_shuffle(deck) {    //실제 사용 덱 숫자 셔플
 }
 function deception_init_game(deception_clue_deck,deception_means_deck, deception_clue, deception_means) { // 처음 게임 시작할 때 덱 구성
     deception_clue_deck = deception_init_clueinfo()
-    //console.log('1번: ',deception_clue_deck)
     deception_means_deck = deception_init_meansinfo()
-    //console.log('2번: ',deception_means_deck)
-    //console.log('clue length:',deception_clue_deck.length)
     deception_clue = deception_init_card(deception_clue_deck.length)
     deception_clue = deception_shuffle(deception_clue)
-    //console.log('clue deck: ',deception_clue)
     deception_means = deception_init_card(deception_means_deck.length)
     deception_means = deception_shuffle(deception_means)
-    //console.log('means deck: ', deception_means)
     return [deception_clue_deck,deception_means_deck,deception_clue,deception_means]
 }
 function deception_draw_card(deception_clue_deck,deception_means_deck,deception_clue,deception_means,card_count) {
     let clue = []
     let means = []
     let tmp
-    //console.log('남은 패?',deception_clue)
     for(let i=0;i<card_count;i++){
         tmp = deception_clue.pop()
         clue.push(deception_clue_deck[tmp])
         tmp = deception_means.pop()
         means.push(deception_means_deck[tmp])
     }
-    //console.log('clue: ',clue,' and means: ', means)
     return [clue, means]    
 }
 function deception_decide_role(personnel,deception_player) {//랜덤으로 역할 정하기
@@ -259,53 +252,35 @@ function deception_decide_role(personnel,deception_player) {//랜덤으로 역�
         player[i] = i
     }
     randnum = Math.floor(Math.random()*personnel)
-    // console.log('d:', deception_player)
-    // console.log('p:',player)
-    // console.log('god: ',randnum)
-    // console.log('p 1:',player)
     deception_player[player[randnum]].job = '법의학자'
-    //console.log('이사람이 god.',deception_player[player[randnum]].name)
     player.splice(randnum,1)
     personnel-=1
     randnum = Math.floor(Math.random()*personnel)
-    //console.log('murderer: ',randnum)
     deception_player[player[randnum]].job = '살인자'
-    //console.log('이사람이 murderer.',deception_player[player[randnum]].name)
     player.splice(randnum,1)
-    //console.log('p 2:',player)
     personnel -=1
     if(personnel>3) {//총 인원 6명 이상
         randnum = Math.floor(Math.random()*personnel)
-        //console.log('witness: ',randnum)
         deception_player[player[randnum]].job = '목격자'
-        //console.log('이사람이 witness.',deception_player[player[randnum]].name)
         player.splice(randnum,1)
-        //console.log('p 3:',player)
         personnel-=1    
         if(personnel>=3) {//위에서 3명을 빼고 남은 인원 3 총 인원 6~7 / 공범 1
             randnum = Math.floor(Math.random()*personnel)
-            //console.log('confederate: ',randnum)
             deception_player[player[randnum]].job = '공범자'
-            //console.log('이사람이 confederate.',deception_player[player[randnum]].name)
             player.splice(randnum,1)
-            //console.log('p 4:',player)
         }
         else if(personnel>=5) {//총 인원 8~9 / 공범 2
             for(let i=0;i<2;i++){
                 randnum = Math.floor(Math.random()*personnel)
-                //console.log('confederate: ',randnum)
                 deception_player[player[randnum]].job = '공범자'
                 player.splice(randnum,1)
-                //console.log('p 4:',player)
             }
         }
         else if(personnel==7) {//총 인원 10 / 공범 3
             for(let i=0;i<3;i++){
                 randnum = Math.floor(Math.random()*personnel)
-                //console.log('confederate: ',randnum)
                 deception_player[player[randnum]].job = '공범자'
                 player.splice(randnum,1)
-                //console.log('p 4:',player)
             }
         }
         else {//인원초과.
