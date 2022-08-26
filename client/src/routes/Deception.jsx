@@ -26,11 +26,11 @@ function Deception(props) {
   const [showGodChoose, setShowGodChoose] = useState(false);
   const [showMurdererChoose, setShowMurdererChoose] = useState(false);
   const { roomNumber } = useParams();
-  let userIndex=1;
+  let userIndex;
   const [placeIndex, setPlaceIndex] = useState(0);
   const [hintIndex, setHintIndex] = useState([0, 0, 0, 0])
 
-  const [users, setUsers] = useState([{name: "창현", job: null, means: [12, 42, 53, 13], clue: [2, 43, 25, 83]}, {name: "형진", job: null, means: [54, 62, 11, 40], clue: [1, 3, 4, 5]}, {name: "민호", job: null, means: [6, 7, 8, 9], clue: [6, 7, 8, 9]}, {name: "박철", job: null, means: [10, 11, 12, 13], clue: [14, 15, 16, 17]}]);
+  const [users, setUsers] = useState([{name: "", job: null, means: [], clue: []}])
   const cause = ['질식', '중상', '과다출혈', '질병', '독살', '사고사']
   const place = [['놀이터', '교실', '기숙사', '구내식당', '엘리베이터', '공중화장실'], ['거실', '침실', '창고', '화장실', '부엌', '발코니'], ['별장', '공원', '슈퍼마켓', '학교', '숲속', '은행'], ['호프집', '서점', '식당', '호텔', '병원', '건설 현장']]
   const hint = [{title: '피해자의 신체특성', content: ['큰 체격', '마름', '키가 큼', '키가 작음', '장애가 있음', '보통의 체격']}, 
@@ -69,7 +69,8 @@ function Deception(props) {
     console.log(user, room);
     console.log(socket);
 
-    socket.emit("deceptionJoin", {room});
+    socket.emit("deceptionJoin", {room: room, name: user});
+    
   }, [room]);
 
   // 메세지 받기
@@ -80,12 +81,26 @@ function Deception(props) {
     });
   }, [messages]);
 
-  // 유저정보 받기
+
+  // 레디전 유저정보 받기
   useEffect(() => {
-    socket.on("userData", (data) => {
-      setUsers(data)
-    })
+    async function fetchData() {
+      await socket.on("deceptionJoin", (data) => {
+        console.log(data)
+        setUsers(data)
+      })
+    }
+    fetchData()
+    for(let i = 0; i < users.length; i++){
+      if(users[i].name == user) userIndex = i;
+    }
+    console.log(userIndex)
   }, [users])
+
+  // 레디후 유저정보 받기
+  useEffect(() => {
+    
+  })
 
   // 레디정보 받기
   useEffect(() => {
@@ -96,35 +111,28 @@ function Deception(props) {
 
   // 가운데에 정보 업데이트
   useEffect(() => {
-    // socket.on("deceptionGodChoice", (data) => {
-    //   setGodChoice(data)
-      
-    // })
-    
-    // 장소
-    for(let i = 0; i < place.length; i++){
-      if(place[i].includes(godChoice.godPlace)){
-        setPlaceIndex(i)
-      }
-    }
-    // 현장
-    for(let i = 0; i < 4; i++){
-      for(let j = 0; j < hint.length; j++){
-        if(hint[j].title == godChoice.godHint[i].title){
-          let copy = hintIndex;
-          copy[i] = j;
-          setHintIndex(copy);
-          console.log(hintIndex)
+    socket.on("deceptionGodChoice", (data) => {
+      setGodChoice(data)
+      // 장소
+      for(let i = 0; i < place.length; i++){
+        if(place[i].includes(godChoice.godPlace)){
+          setPlaceIndex(i)
         }
       }
-    }
+      // 현장
+      for(let i = 0; i < 4; i++){
+        for(let j = 0; j < hint.length; j++){
+          if(hint[j].title == godChoice.godHint[i].title){
+            let copy = hintIndex;
+            copy[i] = j;
+            setHintIndex(copy);
+            console.log(hintIndex)
+          }
+        }
+      }
+    })
+    
   }, [godChoice, godChoice.godPlace, godChoice.godHint, placeIndex, hintIndex])
-
-  useEffect(() => {
-    for(let i = 0; i < users.length; i++){
-      if(users[i].name == user) userIndex = i;
-    }
-  }, [users]);
 
   // 타이머
   useEffect(() => {
@@ -193,7 +201,7 @@ function Deception(props) {
 
   return (
       <div id="deception" style={{backgroundImage: 'url(../public/img/background.webp)', backgroundSize: 'cover', position: 'relative'}}>
-        <img src={require(`../img/background.webp`)} style={{display: "block", width: "100%", height: "auto"}} />
+        <img src={require(`../img/background.webp`)} style={{display: "block", width: "1540px", height: "720px"}} />
         <div style={{position: "absolute", left: '0px', top: '0px'}}>
           {user}님 어서오세요! #{room} 디셉션 방입니다
           <button onClick={()=>setChatting(!chatting)}>채팅</button>
