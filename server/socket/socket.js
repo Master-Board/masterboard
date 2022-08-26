@@ -1,21 +1,16 @@
 const Socketio = require('socket.io')
 const moment = require('moment')
-let deception_player = []
-let deception_clue_deck //deception의 단서카드 정보 ex) 사용자의 단서카드 값 = 4라면 clue_deck의 5번째 정보를 참조하면 됨.
-let deception_means_deck //deception 수단카드 정보. 위와 마찬가지.
-let deception_clue // deception에 실제 사용되는 단서카드
-let deception_means // deception에 실제 사용되는 단서카드
-let deception_murderer //살인자 플레이어 닉네임 혹은 번호
-let deception_murder_means // 살인자 수단카드 번호
-let deception_murder_clue //살인자 단서카드 번호
-let deception_info = [{room:0}, {deception_player: []} ,{deception_clue_deck}, {deception_means_deck}, 
-{deception_clue},{deception_means},{deception_murderer}, {deception_murder_means}, {deception_murder_clue}]
-function swap(a,b) {
-    let tmp = a
-    a = b
-    b = tmp
-    return a,b
-}
+var deception_player = []
+var deception_clue_deck //deception의 단서카드 정보 ex) 사용자의 단서카드 값 = 4라면 clue_deck의 5번째 정보를 참조하면 됨.
+var deception_means_deck //deception 수단카드 정보. 위와 마찬가지.
+var deception_clue // deception에 실제 사용되는 단서카드
+var deception_means // deception에 실제 사용되는 단서카드
+var deception_murderer //살인자 플레이어 닉네임 혹은 번호
+var deception_murder_means // 살인자 수단카드 번호
+var deception_murder_clue //살인자 단서카드 번호
+var deception_info = []
+// let deception_info = [{room:0}, {deception_player: []} ,{deception_clue_deck}, {deception_means_deck}, 
+// {deception_clue},{deception_means},{deception_murderer}, {deception_murder_means}, {deception_murder_clue}]
 function deception_init_clueinfo(){//단서카드 정보 return
     let clue_deck = []
     clue_deck[0] = '에어컨'
@@ -342,13 +337,60 @@ module.exports = (server) => {
     
         socket.on('deceptionJoin',(data) => {
             let {room, name} = data
+            let flag = false
+            //let card_count = 4
             console.log('data: ',data)
             let player_form = {name: name, ready: false, job: '수사관', clue: [], means: []}
             if (data.room != '') {
                 socket.join(room)
 
                 console.log(room+'번 방 join 완료!')
-                deception_player.push(player_form)
+
+                for(let i = 0 ; i < deception_player.length; i++){
+                    if(deception_player[i].name == name) flag = true
+                }
+                if(flag == false) deception_player.push(player_form)
+
+                //가상으로 인원 설정 test
+
+                // player_form = {name: '형진', ready: false, job: 'detective', clue: [], means: []}
+                // deception_player.push(player_form)
+                // player_form = {name: '창현', ready: false, job: 'detective', clue: [], means: []}
+                // deception_player.push(player_form)
+                // player_form = {name: '철', ready: false, job: 'detective', clue: [], means: []}
+                // deception_player.push(player_form)
+                // player_form = {name: '민호', ready: false, job: 'detective', clue: [], means: []}
+                // deception_player.push(player_form)
+                // player_form = {name: 'JuD', ready: false, job: 'detective', clue: [], means: []}
+                // deception_player.push(player_form)
+                // player_form = {name: 'Looser', ready: false, job: 'detective', clue: [], means: []}
+                // deception_player.push(player_form)
+                //console.log('deception_player: ',deception_player)
+
+                //가상으로 인원 설정 test
+
+                // start의 덱 설정 test
+                // let personnel = deception_player.length
+                // //console.log('personnel: ',personnel)
+                // //초기 덱 설정
+                // let init_deck = deception_init_game(deception_clue_deck,deception_means_deck,deception_clue,deception_means)
+                // //console.log('init_deck: ',init_deck)
+                // deception_clue_deck = init_deck[0]
+                // deception_means_deck = init_deck[1]
+                // deception_clue = init_deck[2]
+                // deception_means = init_deck[3]
+                // //console.log('초기 덱 설정 끝',deception_clue, deception_means)                
+                // //직업정하기
+                // deception_player = deception_decide_role(personnel,deception_player)
+                // //카드뽑기
+                // for(let i=0;i<personnel;i++) {
+                //     let drawn_card = deception_draw_card(deception_clue_deck,deception_means_deck,deception_clue,deception_means,card_count)
+                //     //console.log('drawn_card: ',drawn_card)
+                //     deception_player[i].clue = drawn_card[0]
+                //     deception_player[i].means = drawn_card[1]
+                // }
+
+                // start의 덱 설정 test
 
                 console.log('플레이어: ',deception_player)
 
