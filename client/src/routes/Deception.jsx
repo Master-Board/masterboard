@@ -26,7 +26,7 @@ function Deception(props) {
   const [showGodChoose, setShowGodChoose] = useState(false);
   const [showMurdererChoose, setShowMurdererChoose] = useState(false);
   const { roomNumber } = useParams();
-  let userIndex;
+  const [userIndex, setUserIndex] = useState()
   const [placeIndex, setPlaceIndex] = useState(0);
   const [hintIndex, setHintIndex] = useState([0, 0, 0, 0])
 
@@ -66,12 +66,9 @@ function Deception(props) {
     const ENDPOINT = 'http://localhost:5000';
     socket = io(ENDPOINT);
 
-    console.log(user, room);
-    console.log(socket);
 
-    socket.emit("deceptionJoin", {room: room, name: user});
     
-  }, [room]);
+  }, []);
 
   // 메세지 받기
   useEffect(() => {
@@ -84,18 +81,20 @@ function Deception(props) {
 
   // 레디전 유저정보 받기
   useEffect(() => {
-    async function fetchData() {
-      await socket.on("deceptionJoin", (data) => {
-        console.log(data)
-        setUsers(data)
-      })
-    }
-    fetchData()
-    for(let i = 0; i < users.length; i++){
-      if(users[i].name == user) userIndex = i;
-    }
-    console.log(userIndex)
-  }, [users])
+    console.log(user, room);
+    console.log(socket);
+    socket.emit("deceptionJoin", {room: room, name: user});
+    socket.on("deceptionJoin", (data) => {
+      setUsers(data.deception_player)
+      console.log(users)
+      for(let i = 0; i < users.length; i++){
+        if(users[i].name == user) {
+          setUserIndex(i);
+          console.log(userIndex)
+        }
+      }
+    })
+  }, [room])
 
   // 레디후 유저정보 받기
   useEffect(() => {
@@ -207,7 +206,7 @@ function Deception(props) {
           <button onClick={()=>setChatting(!chatting)}>채팅</button>
           <span>{broadcast} </span>
           <span>{minutes}:{seconds < 10? `0${seconds}` : seconds}</span>
-          <button onClick={()=>handleShowGodChoose()}>준비</button>
+          <button onClick={()=>ready()}>준비</button>
           <button onClick={Disconnect}><Link to="/mainpage">나가기</Link></button>
           <div style={{display: "flex", position: "relative"}}>
             {chatting === true ? 
@@ -226,9 +225,9 @@ function Deception(props) {
             <div className='gameboard' style={{textAlign: "center", width: "1540px", height: "690px"}}>
               <div className='top' style={{display: "flex"}}>
                 {users.length<7? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+6)%(users.length)]}/>}
-                <DeceptionUser user={users[(userIndex+1)%(users.length)]}/>
-                <DeceptionUser user={users[(userIndex+2)%(users.length)]}/>
-                <DeceptionUser user={users[(userIndex+3)%(users.length)]}/>
+                {users.length<2? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+1)%(users.length)]}/>}
+                {users.length<3? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+2)%(users.length)]}/>}
+                {users.length<4? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+3)%(users.length)]}/>}
                 {users.length<8? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+7)%(users.length)]}/>}
               </div>
               <div className='middle' style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
