@@ -62,4 +62,4 @@ function DeceptionUser(props) {
     </div>)
 }
 
-export default DeceptionUser;
+export default React.memo(DeceptionUser);

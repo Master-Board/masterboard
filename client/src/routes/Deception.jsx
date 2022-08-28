@@ -26,7 +26,7 @@ function Deception(props) {
   const [showGodChoose, setShowGodChoose] = useState(false);
   const [showMurdererChoose, setShowMurdererChoose] = useState(false);
   const { roomNumber } = useParams();
-  const [userIndex, setUserIndex] = useState()
+  const [userIndex, setUserIndex] = useState(-1)
   const [placeIndex, setPlaceIndex] = useState(0);
   const [hintIndex, setHintIndex] = useState([0, 0, 0, 0])
 
@@ -65,18 +65,16 @@ function Deception(props) {
     setRoom(roomNumber);
     const ENDPOINT = 'http://localhost:5000';
     socket = io(ENDPOINT);
-
-
-    
   }, []);
 
   // 메세지 받기
   useEffect(() => {
     socket.on("chatting", (data) => {
       console.log(data)
+      console.log([...messages,data])
       setMessages([...messages, data])
     });
-  }, [messages]);
+  }, []);
 
 
   // 레디전 유저정보 받기
@@ -84,6 +82,11 @@ function Deception(props) {
     console.log(user, room);
     console.log(socket);
     socket.emit("deceptionJoin", {room: room, name: user});
+    
+  }, [room])
+
+  // 레디후 유저정보 받기
+  useEffect(() => {
     socket.on("deceptionJoin", (data) => {
       setUsers(data.deception_player)
       console.log(users)
@@ -94,12 +97,7 @@ function Deception(props) {
         }
       }
     })
-  }, [room])
-
-  // 레디후 유저정보 받기
-  useEffect(() => {
-    
-  })
+  }, [])
 
   // 레디정보 받기
   useEffect(() => {
@@ -219,7 +217,10 @@ function Deception(props) {
                     </div>
                   ))}
                 </div>
-                <input type="text" placeholder="메세지를 입력하세요" onChange={(e)=>setText(e.target.value)} value={text} onKeyPress={(e)=>(e.key === "Enter" ? sendMessage() : null)} />
+                <input type="text" placeholder="메세지를 입력하세요" onChange={(e)=>{
+                  e.preventDefault()
+                  setText(e.target.value)
+                  }} value={text} onKeyPress={(e)=>(e.key === "Enter" ? sendMessage() : null)} />
                 <button onClick={()=>sendMessage()}>send</button>
               </div> : null}
             <div className='gameboard' style={{textAlign: "center", width: "1540px", height: "690px"}}>
