@@ -348,19 +348,19 @@ module.exports = (server) => {
                 //deception_player.push(player_form)
                 //가상으로 인원 설정 test
 
-                player_form = {name: '형진', ready: false, job: 'detective', clue: [], means: []}
-                deception_player.push(player_form)
-                player_form = {name: '창현', ready: false, job: 'detective', clue: [], means: []}
-                deception_player.push(player_form)
-                player_form = {name: '철', ready: false, job: 'detective', clue: [], means: []}
-                deception_player.push(player_form)
-                player_form = {name: '민호', ready: false, job: 'detective', clue: [], means: []}
-                deception_player.push(player_form)
-                player_form = {name: 'JuD', ready: false, job: 'detective', clue: [], means: []}
-                deception_player.push(player_form)
-                player_form = {name: 'Looser', ready: false, job: 'detective', clue: [], means: []}
-                deception_player.push(player_form)
-                console.log('deception_player: ',deception_player)
+                // player_form = {name: '형진', ready: false, job: 'detective', clue: [], means: []}
+                // deception_player.push(player_form)
+                // player_form = {name: '창현', ready: false, job: 'detective', clue: [], means: []}
+                // deception_player.push(player_form)
+                // player_form = {name: '철', ready: false, job: 'detective', clue: [], means: []}
+                // deception_player.push(player_form)
+                // player_form = {name: '민호', ready: false, job: 'detective', clue: [], means: []}
+                // deception_player.push(player_form)
+                // player_form = {name: 'JuD', ready: false, job: 'detective', clue: [], means: []}
+                // deception_player.push(player_form)
+                // player_form = {name: 'Looser', ready: false, job: 'detective', clue: [], means: []}
+                // deception_player.push(player_form)
+                // console.log('deception_player: ',deception_player)
 
                 //ready test
                 // p = deception_player.filter((e)=>{
