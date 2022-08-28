@@ -345,23 +345,31 @@ module.exports = (server) => {
 
                 console.log(room+'번 방 join 완료!')
 
-                deception_player.push(player_form)
-
+                //deception_player.push(player_form)
                 //가상으로 인원 설정 test
 
-                // player_form = {name: '형진', ready: false, job: 'detective', clue: [], means: []}
-                // deception_player.push(player_form)
-                // player_form = {name: '창현', ready: false, job: 'detective', clue: [], means: []}
-                // deception_player.push(player_form)
-                // player_form = {name: '철', ready: false, job: 'detective', clue: [], means: []}
-                // deception_player.push(player_form)
-                // player_form = {name: '민호', ready: false, job: 'detective', clue: [], means: []}
-                // deception_player.push(player_form)
-                // player_form = {name: 'JuD', ready: false, job: 'detective', clue: [], means: []}
-                // deception_player.push(player_form)
-                // player_form = {name: 'Looser', ready: false, job: 'detective', clue: [], means: []}
-                // deception_player.push(player_form)
-                //console.log('deception_player: ',deception_player)
+                player_form = {name: '형진', ready: false, job: 'detective', clue: [], means: []}
+                deception_player.push(player_form)
+                player_form = {name: '창현', ready: false, job: 'detective', clue: [], means: []}
+                deception_player.push(player_form)
+                player_form = {name: '철', ready: false, job: 'detective', clue: [], means: []}
+                deception_player.push(player_form)
+                player_form = {name: '민호', ready: false, job: 'detective', clue: [], means: []}
+                deception_player.push(player_form)
+                player_form = {name: 'JuD', ready: false, job: 'detective', clue: [], means: []}
+                deception_player.push(player_form)
+                player_form = {name: 'Looser', ready: false, job: 'detective', clue: [], means: []}
+                deception_player.push(player_form)
+                console.log('deception_player: ',deception_player)
+
+                //ready test
+                // p = deception_player.filter((e)=>{
+                //     return e.name == '창현'
+                // })
+                // console.log('r: ',p,p[0].ready)
+                
+
+                // ready test
 
                 //가상으로 인원 설정 test
 
@@ -402,19 +410,27 @@ module.exports = (server) => {
         socket.on('deceptionReady',(data) => {
             const {user, room} = data
             let msg // 유저가 준비한지 여부
-            p = {a:{},b:{},c:{}}
-            if(deception_player[deception_player.indexof(user)].ready == true) {
-                deception_player[deception_player.indexof(user)].ready = false
+            u = deception_player.filter((e)=>{
+                    return e.name == user
+                })
+            if(u[0].ready == true) {
+                u[0].ready = false
                 msg = '레디 해제'
             } 
             else{
-                deception_player[deception_player.indexof(user)].ready == true
+                u[0].ready == true
                 msg = '레디 완료'
             }
             let not_ready = 0
             for(let i=0;i<deception_player.length;i++){
-                if(deception_player[i].ready==false){
-                    not_ready += 1
+                for(let i=0;i<deception_player.length;i++){
+                    u = deception_player.filter((e)=>{
+                        return e.name == deception_player[i].name
+                    })
+                    console.log('u:',u)
+                    if(u[0].ready==false){
+                        not_ready += 1
+                    }
                 }
             }
             let ready // 모두 준비 되었는지 여부
