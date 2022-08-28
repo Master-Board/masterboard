@@ -337,7 +337,6 @@ module.exports = (server) => {
     
         socket.on('deceptionJoin',(data) => {
             let {room, name} = data
-            let flag = false
             //let card_count = 4
             console.log('data: ',data)
             let player_form = {name: name, ready: false, job: '수사관', clue: [], means: []}
@@ -346,11 +345,7 @@ module.exports = (server) => {
 
                 console.log(room+'번 방 join 완료!')
 
-                for(let i = 0 ; i < deception_player.length; i++){
-                    if(deception_player[i].name == name) flag = true
-                }
-                if(flag == false) deception_player.push(player_form)
-
+                //deception_player.push(player_form)
                 //가상으로 인원 설정 test
 
                 // player_form = {name: '형진', ready: false, job: 'detective', clue: [], means: []}
@@ -365,7 +360,16 @@ module.exports = (server) => {
                 // deception_player.push(player_form)
                 // player_form = {name: 'Looser', ready: false, job: 'detective', clue: [], means: []}
                 // deception_player.push(player_form)
-                //console.log('deception_player: ',deception_player)
+                // console.log('deception_player: ',deception_player)
+
+                //ready test
+                // p = deception_player.filter((e)=>{
+                //     return e.name == '창현'
+                // })
+                // console.log('r: ',p,p[0].ready)
+                
+
+                // ready test
 
                 //가상으로 인원 설정 test
 
@@ -406,19 +410,27 @@ module.exports = (server) => {
         socket.on('deceptionReady',(data) => {
             const {user, room} = data
             let msg // 유저가 준비한지 여부
-            p = {a:{},b:{},c:{}}
-            if(deception_player[deception_player.indexof(user)].ready == true) {
-                deception_player[deception_player.indexof(user)].ready = false
+            u = deception_player.filter((e)=>{
+                    return e.name == user
+                })
+            if(u[0].ready == true) {
+                u[0].ready = false
                 msg = '레디 해제'
             } 
             else{
-                deception_player[deception_player.indexof(user)].ready == true
+                u[0].ready == true
                 msg = '레디 완료'
             }
             let not_ready = 0
             for(let i=0;i<deception_player.length;i++){
-                if(deception_player[i].ready==false){
-                    not_ready += 1
+                for(let i=0;i<deception_player.length;i++){
+                    u = deception_player.filter((e)=>{
+                        return e.name == deception_player[i].name
+                    })
+                    console.log('u:',u)
+                    if(u[0].ready==false){
+                        not_ready += 1
+                    }
                 }
             }
             let ready // 모두 준비 되었는지 여부
@@ -453,20 +465,21 @@ module.exports = (server) => {
             let {room,card_count} = data
             
             let personnel = deception_player.length
-                //초기 덱 설정
-                let init_deck = deception_init_game(deception_clue_deck,deception_means_deck,deception_clue,deception_means)
-                deception_clue_deck = init_deck[0]
-                deception_means_deck = init_deck[1]
-                deception_clue = init_deck[2]
-                deception_means = init_deck[3]             
-                //직업정하기
-                deception_player = deception_decide_role(personnel,deception_player)
-                //카드뽑기
-                for(let i=0;i<personnel;i++) {
-                    let drawn_card = deception_draw_card(deception_clue_deck,deception_means_deck,deception_clue,deception_means,card_count)
-                    deception_player[i].clue = drawn_card[0]
-                    deception_player[i].means = drawn_card[1]
-                }
+            //초기 덱 설정
+            let init_deck = deception_init_game(deception_clue_deck,deception_means_deck,deception_clue,deception_means)
+            deception_clue_deck = init_deck[0]
+            deception_means_deck = init_deck[1]
+            deception_clue = init_deck[2]
+            deception_means = init_deck[3]             
+            //직업정하기
+            deception_player = deception_decide_role(personnel,deception_player)
+            //카드뽑기
+            for(let i=0;i<personnel;i++) {
+                let drawn_card = deception_draw_card(deception_clue_deck,deception_means_deck,deception_clue,deception_means,card_count)
+                deception_player[i].clue = drawn_card[0]
+                deception_player[i].means = drawn_card[1]
+            }
+            console.log(deception_player)
             socket.to(room).emit('deceptionStart', {
                 deception_player
             })            
