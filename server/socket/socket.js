@@ -448,8 +448,13 @@ module.exports = (server) => {
         })
     
         socket.on('deceptionLeave',(data) => {   
-            let room = data.room
+            let {user,room} = data.room
             if (data.room != '') {
+                for(let i=0;i<deception_player.length;i++){
+                    if(deception_player[i].name == user){
+                        deception_player.splice(i,1)
+                    }
+                }
                 socket.leave(room)
                 console.log(room+'번 방 leave 완료!')
             }
