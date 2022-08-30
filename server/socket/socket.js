@@ -289,6 +289,7 @@ function deception_decide_role(personnel,deception_player) {//랜덤으로 역�
     return deception_player
 }
 module.exports = (server) => {
+    
     const io = Socketio(server, {
         cors: {
             origin: "*",
@@ -345,7 +346,7 @@ module.exports = (server) => {
 
                 console.log(room+'번 방 join 완료!')
 
-                //deception_player.push(player_form)
+                deception_player.push(player_form)
                 //가상으로 인원 설정 test
 
                 // player_form = {name: '형진', ready: false, job: 'detective', clue: [], means: []}
@@ -410,9 +411,12 @@ module.exports = (server) => {
         socket.on('deceptionReady',(data) => {
             const {user, room} = data
             let msg // 유저가 준비한지 여부
+            //console.log('user: ',user)
             u = deception_player.filter((e)=>{
                     return e.name == user
                 })
+            // console.log('ddd:',deception_player)
+            // console.log('u:',u)
             if(u[0].ready == true) {
                 u[0].ready = false
                 msg = '레디 해제'
@@ -427,7 +431,7 @@ module.exports = (server) => {
                     u = deception_player.filter((e)=>{
                         return e.name == deception_player[i].name
                     })
-                    console.log('u:',u)
+                    //console.log('u:',u)
                     if(u[0].ready==false){
                         not_ready += 1
                     }
@@ -440,6 +444,7 @@ module.exports = (server) => {
                     ready,
                     msg
                 })
+                //console.log('모두 준비 완료')
             }
             else{ //한명이라도 준비가 안되면
                 ready = false
@@ -447,6 +452,7 @@ module.exports = (server) => {
                     ready,
                     msg
                 })
+                //console.log('모두 준비 안됨')
             }
         })
     

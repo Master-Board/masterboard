@@ -74,7 +74,7 @@ function Deception(props) {
       console.log([...messages,data])
       setMessages([...messages, data])
     });
-  }, []);
+  }, [messages]);
 
 
   // 레디전 유저정보 받기
@@ -97,7 +97,7 @@ function Deception(props) {
         }
       }
     })
-  }, [])
+  }, [users, userIndex])
 
   // 레디정보 받기
   useEffect(() => {
@@ -192,7 +192,7 @@ function Deception(props) {
   }
 
   const ready = () => {
-    socket.emit("deceptionReady", {player: user, room: room})
+    socket.emit("deceptionReady", {user: user, room: room})
     setBroadcast("준비완료!")
   }
 
