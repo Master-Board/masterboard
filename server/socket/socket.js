@@ -410,55 +410,51 @@ module.exports = (server) => {
 
         socket.on('deceptionReady',(data) => {
             const {user, room} = data
-            let msg // 유저가 준비한지 여부
-            //console.log('user: ',user)
-            u = deception_player.filter((e)=>{
-                    return e.name == user
-                })
-            // console.log('ddd:',deception_player)
-            // console.log('u:',u)
-            if(u[0].ready == true) {
-                u[0].ready = false
-                msg = '레디 해제'
-            } 
-            else{
-                u[0].ready == true
-                msg = '레디 완료'
-            }
-            let not_ready = 0
+            //let msg // 유저가 준비한지 여부
             for(let i=0;i<deception_player.length;i++){
-                for(let i=0;i<deception_player.length;i++){
-                    u = deception_player.filter((e)=>{
-                        return e.name == deception_player[i].name
-                    })
-                    //console.log('u:',u)
-                    if(u[0].ready==false){
-                        not_ready += 1
+                if(deception_player[i].name == user){
+                    if(deception_player[i].ready == true){
+                        deception_player[i].ready = false
+                        //msg = '레디 해제'
+                        //console.log(msg)
                     }
+                    else {
+                        deception_player[i].ready = true
+                        //msg = '레디 완료'
+                        //console.log(deception_player[i].name,deception_player[i].ready,msg)
+                    }
+                    //console.log('준비 후: ',deception_player)
                 }
             }
-            let ready // 모두 준비 되었는지 여부
-            if(not_ready == 0) { //모두 준비 완료되면
+            let not_ready = 0
+            let ready = false
+            for(let i=0;i<deception_player.length;i++){
+                if(deception_player[i].ready == false) not_ready += 1
+            }
+            if(not_ready == 0) { //모두 준비 완료되면 (레디 안 한 사람이 없으면)
                 ready = true
                 socket.to(room).emit('deceptionReady',{
-                    ready,
-                    msg
+                    ready
                 })
-                //console.log('모두 준비 완료')
+                //console.log('다 준비됨',ready,msg,not_ready)
             }
             else{ //한명이라도 준비가 안되면
                 ready = false
                 socket.to(room).emit('deceptionReady',{
-                    ready,
-                    msg
+                    ready
                 })
-                //console.log('모두 준비 안됨')
+                //console.log('준비 덜 됨',ready,msg,not_ready)
             }
         })
     
         socket.on('deceptionLeave',(data) => {   
-            let room = data.room
+            let {user,room} = data.room
             if (data.room != '') {
+                for(let i=0;i<deception_player.length;i++){
+                    if(deception_player[i].name == user){
+                        deception_player.splice(i,1)
+                    }
+                }
                 socket.leave(room)
                 console.log(room+'번 방 leave 완료!')
             }
