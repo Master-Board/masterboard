@@ -67,6 +67,12 @@ function Deception(props) {
     socket = io(ENDPOINT);
   }, []);
 
+  useEffect(() => {
+    return () => {
+      socket.close();
+    }
+  }, [])
+
   // 메세지 받기
   useEffect(() => {
     socket.on("chatting", (data) => {
@@ -102,7 +108,9 @@ function Deception(props) {
   // 레디정보 받기
   useEffect(() => {
     socket.on("deceptionReady", (data) => {
-      if(data) startGame()
+      if(data.ready) {
+        startGame()
+      }
     })
   }, [])
 
@@ -153,6 +161,21 @@ function Deception(props) {
     setMessage({name: user, message: text, room: room});
   }, [text])
 
+  useEffect(() => {
+    (() => {
+      window.addEventListener("beforeunload", preventClose);
+    })();
+
+    return () => {
+      window.removeEventListener("beforeunload", preventClose);
+    };
+  }, []);
+
+  const preventClose = (e: BeforeUnloadEvent) => {
+    Disconnect();
+    e.returnValue = "";
+  }
+
   const sendMessage = () => {
       socket.emit("chatting", {message});
       setMessages([...messages, {name: user, message: text}])
@@ -160,7 +183,7 @@ function Deception(props) {
   };
 
   const Disconnect = () => {
-    socket.emit("deceptionLeave", {room})
+    socket.emit("deceptionLeave", {user: user, room: room})
   }
 
   const Guess = () => {
