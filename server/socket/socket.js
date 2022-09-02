@@ -1,4 +1,4 @@
-const Socketio = require('socket.io')
+const Socketio = require('socket.io') // namespace 다르게 해서 가능?
 const moment = require('moment')
 var deception_player = []
 var deception_clue_deck //deception의 단서카드 정보 ex) 사용자의 단서카드 값 = 4라면 clue_deck의 5번째 정보를 참조하면 됨.
@@ -300,8 +300,17 @@ module.exports = (server) => {
         const req = socket.request;
         const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         console.log('새로운 클라이언트 접속! ip:', ip,'socketid:', socket.id,'reqip:', req.ip);
+        
         socket.on('disconnect', () => { // 연결 종료 시
             console.log('클라이언트 접속 해제', ip, socket.id);
+            for(let i=0;i<deception_player.length;i++) {
+                if(deception_player[i].socketid == socket.id) {
+                    deception_player.splice(i,1)
+                    socket.leave(room)
+                    socket.emit('disconnect',deception_player)
+                    console.log(room+'번 방 leave 완료!')
+                }
+            }
             clearInterval(socket.interval);
         });
 
@@ -340,7 +349,7 @@ module.exports = (server) => {
             let {room, name} = data
             //let card_count = 4
             console.log('data: ',data)
-            let player_form = {name: name, ready: false, job: '수사관', clue: [], means: []}
+            let player_form = {name: name, ready: false, job: '수사관', clue: [], means: [], socketid: socket.id}
             if (data.room != '') {
                 socket.join(room)
 
