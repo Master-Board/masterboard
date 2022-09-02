@@ -69,7 +69,7 @@ function Deception(props) {
 
   useEffect(() => {
     return () => {
-      socket.close();
+      socket.emit("deceptionLeave", {user: user, room: room})
     }
   }, [])
 
@@ -83,15 +83,14 @@ function Deception(props) {
   }, [messages]);
 
 
-  // 레디전 유저정보 받기
+  // 입장
   useEffect(() => {
     console.log(user, room);
     console.log(socket);
     socket.emit("deceptionJoin", {room: room, name: user});
-    
   }, [room])
 
-  // 레디후 유저정보 받기
+  // 레디전 유저정보 받기
   useEffect(() => {
     socket.on("deceptionJoin", (data) => {
       setUsers(data.deception_player)
@@ -103,13 +102,28 @@ function Deception(props) {
         }
       }
     })
-  }, [users, userIndex])
+  }, [])
+
+  // 유저정보 받기 & 시작
+  useEffect(() => {
+    socket.on("deceptionStart", (data) => {
+      setUsers(data.deception_player)
+      console.log(users)
+      for(let i = 0; i < users.length; i++){
+        if(users[i].name == user) {
+          setUserIndex(i);
+          console.log(userIndex)
+        }
+      }
+    })
+    startGame()
+  }, [])
 
   // 레디정보 받기
   useEffect(() => {
     socket.on("deceptionReady", (data) => {
       if(data.ready) {
-        startGame()
+        socket.emit("deceptionStart", {room: room, card_count: 4})
       }
     })
   }, [])
@@ -163,16 +177,17 @@ function Deception(props) {
 
   useEffect(() => {
     (() => {
-      window.addEventListener("beforeunload", preventClose);
+      window.addEventListener("onbeforeunload", preventClose);
     })();
 
     return () => {
-      window.removeEventListener("beforeunload", preventClose);
+      window.removeEventListener("onbeforeunload", preventClose);
     };
   }, []);
 
-  const preventClose = (e: BeforeUnloadEvent) => {
-    Disconnect();
+  const preventClose = (e: onBeforeUnloadEvent) => {
+    e.preventDefault()
+    socket.emit("deceptionLeave", {user: user, room: room})
     e.returnValue = "";
   }
 
@@ -196,18 +211,21 @@ function Deception(props) {
   const startGame = async () => {
     console.log("게임시작")
     setBroadcast("게임이 시작되었습니다.")
+    console.log(users[userIndex].job)
     setMyJob(users[userIndex].job);
+    setMyJob('살인자');
+    console.log(myJob)
 
     //직업 정하기
     // 법의학자 god 살인자 murderer 목격자 witness 공범자 confederate
     // setTimeout(function(){ setBroadcast(`당신은 ${myJob}입니다. 살인자가 선택을 완료할때까지 기다려주세요.`) }, 2000)
     setBroadcast(`당신은 ${myJob}입니다. 살인자가 선택을 완료할때까지 기다려주세요.`)
 
-    if(myJob == 'murderer'){ // 살인자
+    if(myJob == '살인자'){ 
       setTimeout(function(){ handleShowMurdererChoose() }, 4000)
       await socket.emit("deceptionMurdererChoice", {answer})
       setBroadcast("누군가 살인을 했습니다! 법의학자가 선택을 완료할때까지 기다려주세요.")
-      if(myJob == 'god'){
+      if(myJob == '법의학자'){
         handleShowGodChoose()
         await socket.emit("deceptionGodChoice", {godChoice})
       }
