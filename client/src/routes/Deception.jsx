@@ -16,7 +16,7 @@ function Deception(props) {
   const [chatting, setChatting] = useState(false);
   const [message, setMessage] = useState('');
   const [text, setText] = useState('');
-  const [broadcast, setBroadcast] = useState('살인자가 선택중입니다');
+  const [broadcast, setBroadcast] = useState('어서오세요!');
   const [messages, setMessages] = useState([]);
   const [minutes, setMinutes] = useState(0)
   const [seconds, setSeconds] = useState(0)
@@ -67,11 +67,13 @@ function Deception(props) {
     socket = io(ENDPOINT);
   }, []);
 
+  // 입장
   useEffect(() => {
-    return () => {
-      socket.emit("deceptionLeave", {user: user, room: room})
-    }
-  }, [])
+    console.log(user, room);
+    console.log(socket);
+    setTimeout(function(){ socket.emit("deceptionJoin", {room: room, name: user}); }, 2000)
+    
+  }, [room])
 
   // 메세지 받기
   useEffect(() => {
@@ -81,25 +83,28 @@ function Deception(props) {
       setMessages([...messages, data])
     });
   }, [messages]);
-
-
-  // 입장
-  useEffect(() => {
-    console.log(user, room);
-    console.log(socket);
-    socket.emit("deceptionJoin", {room: room, name: user});
-  }, [room])
-
+  
   // 레디전 유저정보 받기
   useEffect(() => {
     socket.on("deceptionJoin", (data) => {
-      setUsers(data.deception_player)
+      console.log(data)
+      let copy = data.deception_player
+      setUsers(copy)
       console.log(users)
       for(let i = 0; i < users.length; i++){
         if(users[i].name == user) {
           setUserIndex(i);
           console.log(userIndex)
         }
+      }
+    })
+  }, [])
+
+  // 레디정보 받기
+  useEffect(() => {
+    socket.on("deceptionReady", (data) => {
+      if(data.ready) {
+        socket.emit("deceptionStart", {room: room, card_count: 4})
       }
     })
   }, [])
@@ -115,16 +120,7 @@ function Deception(props) {
           console.log(userIndex)
         }
       }
-    })
-    startGame()
-  }, [])
-
-  // 레디정보 받기
-  useEffect(() => {
-    socket.on("deceptionReady", (data) => {
-      if(data.ready) {
-        socket.emit("deceptionStart", {room: room, card_count: 4})
-      }
+      startGame()
     })
   }, [])
 
@@ -211,6 +207,9 @@ function Deception(props) {
   const startGame = async () => {
     console.log("게임시작")
     setBroadcast("게임이 시작되었습니다.")
+    console.log(users)
+    console.log(userIndex)
+    console.log(users[userIndex])
     console.log(users[userIndex].job)
     setMyJob(users[userIndex].job);
     setMyJob('살인자');
