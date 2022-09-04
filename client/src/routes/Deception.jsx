@@ -10,8 +10,9 @@ let socket;
 
 function Deception(props) {
 
-  const [user, setUser] = useState('');
-  const [room, setRoom] = useState('');
+  const { roomNumber } = useParams();
+  const [user, setUser] = useState(props.user.id);
+  const [room, setRoom] = useState(roomNumber);
   const [myJob, setMyJob] = useState('');
   const [chatting, setChatting] = useState(false);
   const [message, setMessage] = useState('');
@@ -25,12 +26,11 @@ function Deception(props) {
   const [godChoice, setGodChoice] = useState({godCause: '', godPlace: '', godHint: [{title: '', content: ''}, {title: '', content: ''}, {title: '', content: ''}, {title: '', content: ''}]});
   const [showGodChoose, setShowGodChoose] = useState(false);
   const [showMurdererChoose, setShowMurdererChoose] = useState(false);
-  const { roomNumber } = useParams();
   const [userIndex, setUserIndex] = useState(-1)
   const [placeIndex, setPlaceIndex] = useState(0);
   const [hintIndex, setHintIndex] = useState([0, 0, 0, 0])
 
-  const [users, setUsers] = useState([{name: "", job: null, means: [], clue: []}])
+  const [users, setUsers] = useState([])
   const cause = ['질식', '중상', '과다출혈', '질병', '독살', '사고사']
   const place = [['놀이터', '교실', '기숙사', '구내식당', '엘리베이터', '공중화장실'], ['거실', '침실', '창고', '화장실', '부엌', '발코니'], ['별장', '공원', '슈퍼마켓', '학교', '숲속', '은행'], ['호프집', '서점', '식당', '호텔', '병원', '건설 현장']]
   const hint = [{title: '피해자의 신체특성', content: ['큰 체격', '마름', '키가 큼', '키가 작음', '장애가 있음', '보통의 체격']}, 
@@ -61,17 +61,18 @@ function Deception(props) {
   const handleShowMurdererChoose = () => setShowMurdererChoose(true);
 
   useEffect(() => {
-    setUser(props.user.id);
-    setRoom(roomNumber);
+    
     const ENDPOINT = 'http://localhost:5000';
     socket = io(ENDPOINT);
+    console.log(props.user.id, roomNumber)
+    console.log(user, room)
   }, []);
 
   // 입장
   useEffect(() => {
     console.log(user, room);
     console.log(socket);
-    setTimeout(function(){ socket.emit("deceptionJoin", {room: room, name: user}); }, 2000)
+    socket.emit("deceptionJoin", {room: roomNumber, name: props.user.id});
     
   }, [room])
 
@@ -87,9 +88,8 @@ function Deception(props) {
   // 레디전 유저정보 받기
   useEffect(() => {
     socket.on("deceptionJoin", (data) => {
-      console.log(data)
-      let copy = data.deception_player
-      setUsers(copy)
+      console.log(data.deception_player)
+      setUsers(data.deception_player)
       console.log(users)
       for(let i = 0; i < users.length; i++){
         if(users[i].name == user) {

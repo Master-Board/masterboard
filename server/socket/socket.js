@@ -412,9 +412,10 @@ module.exports = (server) => {
 
                 console.log('플레이어: ',deception_player)
 
-                socket.to(room).emit('deceptionJoin',{
+                socket.broadcast.to(room).emit('deceptionJoin',{
                     deception_player
                 })
+                console.log("서버에서 보냈당")
             }
             else{
                 console.log('value is empty!')
