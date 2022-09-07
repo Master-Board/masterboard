@@ -4,7 +4,6 @@ import io from "socket.io-client";
 import DeceptionUser from './DeceptionUser';
 import GodChooseModal from './GodChooseModal';
 import MurdererChooseModal from './MurdererChooseModal';
-import xImage from '../img/x.png'
 
 let socket;
 
@@ -29,8 +28,8 @@ function Deception(props) {
   const [userIndex, setUserIndex] = useState(-1)
   const [placeIndex, setPlaceIndex] = useState(0);
   const [hintIndex, setHintIndex] = useState([0, 0, 0, 0])
-
   const [users, setUsers] = useState([])
+
   const cause = ['질식', '중상', '과다출혈', '질병', '독살', '사고사']
   const place = [['놀이터', '교실', '기숙사', '구내식당', '엘리베이터', '공중화장실'], ['거실', '침실', '창고', '화장실', '부엌', '발코니'], ['별장', '공원', '슈퍼마켓', '학교', '숲속', '은행'], ['호프집', '서점', '식당', '호텔', '병원', '건설 현장']]
   const hint = [{title: '피해자의 신체특성', content: ['큰 체격', '마름', '키가 큼', '키가 작음', '장애가 있음', '보통의 체격']}, 
@@ -56,35 +55,19 @@ function Deception(props) {
   
   const handleCloseGodChoose = () => setShowGodChoose(false);
   const handleShowGodChoose = () => setShowGodChoose(true);
-
   const handleCloseMurdererChoose = () => setShowMurdererChoose(false);
   const handleShowMurdererChoose = () => setShowMurdererChoose(true);
 
   useEffect(() => {
-    
     const ENDPOINT = 'http://localhost:5000';
     socket = io(ENDPOINT);
-    console.log(props.user.id, roomNumber)
-    console.log(user, room)
   }, []);
 
   // 입장
   useEffect(() => {
-    console.log(user, room);
-    console.log(socket);
     socket.emit("deceptionJoin", {room: roomNumber, name: props.user.id});
-    
   }, [room])
 
-  // 메세지 받기
-  useEffect(() => {
-    socket.on("chatting", (data) => {
-      console.log(data)
-      console.log([...messages,data])
-      setMessages([...messages, data])
-    });
-  }, [messages]);
-  
   // 레디전 유저정보 받기
   useEffect(() => {
     socket.on("deceptionJoin", (data) => {
@@ -99,6 +82,19 @@ function Deception(props) {
       }
     })
   }, [])
+
+  // 메세지 받기
+  useEffect(() => {
+    socket.on("chatting", (data) => {
+      console.log(data)
+      console.log([...messages,data])
+      setMessages([...messages, data])
+    });
+  }, [messages]);
+
+  useEffect(() => {
+    setMessage({name: user, message: text, room: room});
+  }, [text])
 
   // 레디정보 받기
   useEffect(() => {
@@ -146,7 +142,6 @@ function Deception(props) {
         }
       }
     })
-    
   }, [godChoice, godChoice.godPlace, godChoice.godHint, placeIndex, hintIndex])
 
   // 타이머
@@ -167,41 +162,22 @@ function Deception(props) {
     return () => clearInterval(countdown)
   }, [minutes, seconds])
 
-  useEffect(() => {
-    setMessage({name: user, message: text, room: room});
-  }, [text])
-
-  useEffect(() => {
-    (() => {
-      window.addEventListener("onbeforeunload", preventClose);
-    })();
-
-    return () => {
-      window.removeEventListener("onbeforeunload", preventClose);
-    };
-  }, []);
-
-  const preventClose = (e: onBeforeUnloadEvent) => {
-    e.preventDefault()
-    socket.emit("deceptionLeave", {user: user, room: room})
-    e.returnValue = "";
-  }
-
   const sendMessage = () => {
       socket.emit("chatting", {message});
       setMessages([...messages, {name: user, message: text}])
       setText('');
-  };
-
-  const Disconnect = () => {
-    socket.emit("deceptionLeave", {user: user, room: room})
-  }
+  };  
 
   const Guess = () => {
     // socket.emit("deceptionGuessAnswer", {room: room, muderer: muderer, means: blue, clue: red})
     socket.on("deceptionGuessAnswer", (data) => {
       console.log(data.answer)
     })
+  }
+
+  const ready = () => {
+    socket.emit("deceptionReady", {user: user, room: room})
+    setBroadcast("준비완료!")
   }
 
   const startGame = async () => {
@@ -231,9 +207,8 @@ function Deception(props) {
     }
   }
 
-  const ready = () => {
-    socket.emit("deceptionReady", {user: user, room: room})
-    setBroadcast("준비완료!")
+  const Disconnect = () => {
+    socket.emit("deceptionLeave", {user: user, room: room})
   }
 
   return (
