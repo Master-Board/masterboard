@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useParams } from "react-router-dom";
 import io from "socket.io-client";
 import DeceptionUser from './DeceptionUser';
@@ -25,10 +25,12 @@ function Deception(props) {
   const [godChoice, setGodChoice] = useState({godCause: '', godPlace: '', godHint: [{title: '', content: ''}, {title: '', content: ''}, {title: '', content: ''}, {title: '', content: ''}]});
   const [showGodChoose, setShowGodChoose] = useState(false);
   const [showMurdererChoose, setShowMurdererChoose] = useState(false);
-  const [userIndex, setUserIndex] = useState(-1)
   const [placeIndex, setPlaceIndex] = useState(0);
   const [hintIndex, setHintIndex] = useState([0, 0, 0, 0])
-  const [users, setUsers] = useState([])
+  const users = useRef({})
+  const userIndex = useRef(-1)
+  const [, updateState] = useState();
+  const forceUpdate = useCallback(() => updateState({}), [])
 
   const cause = ['질식', '중상', '과다출혈', '질병', '독살', '사고사']
   const place = [['놀이터', '교실', '기숙사', '구내식당', '엘리베이터', '공중화장실'], ['거실', '침실', '창고', '화장실', '부엌', '발코니'], ['별장', '공원', '슈퍼마켓', '학교', '숲속', '은행'], ['호프집', '서점', '식당', '호텔', '병원', '건설 현장']]
@@ -72,12 +74,14 @@ function Deception(props) {
   useEffect(() => {
     socket.on("deceptionJoin", (data) => {
       console.log(data.deception_player)
-      setUsers(data.deception_player)
-      console.log(users)
-      for(let i = 0; i < users.length; i++){
-        if(users[i].name == user) {
-          setUserIndex(i);
-          console.log(userIndex)
+      users.current = data.deception_player
+      console.log(users.current.length)
+      for(let i = 0; i < users.current.length; i++){
+        if(users.current[i].name == user) {
+          userIndex.current = i
+          console.log(userIndex.current)
+          forceUpdate()
+          break
         }
       }
     })
@@ -108,12 +112,14 @@ function Deception(props) {
   // 유저정보 받기 & 시작
   useEffect(() => {
     socket.on("deceptionStart", (data) => {
-      setUsers(data.deception_player)
+      users.current = data.deception_player
       console.log(users)
-      for(let i = 0; i < users.length; i++){
-        if(users[i].name == user) {
-          setUserIndex(i);
+      for(let i = 0; i < users.current.length; i++){
+        if(users.current[i].name == user) {
+          userIndex.current = i
           console.log(userIndex)
+          forceUpdate()
+          break
         }
       }
       startGame()
@@ -184,10 +190,10 @@ function Deception(props) {
     console.log("게임시작")
     setBroadcast("게임이 시작되었습니다.")
     console.log(users)
-    console.log(userIndex)
-    console.log(users[userIndex])
-    console.log(users[userIndex].job)
-    setMyJob(users[userIndex].job);
+    console.log(userIndex.current)
+    console.log(users.current[userIndex.current])
+    console.log(users.current[userIndex.current].job)
+    setMyJob(users.current[userIndex.current].job);
     setMyJob('살인자');
     console.log(myJob)
 
@@ -240,14 +246,14 @@ function Deception(props) {
               </div> : null}
             <div className='gameboard' style={{textAlign: "center", width: "1540px", height: "690px"}}>
               <div className='top' style={{display: "flex"}}>
-                {users.length<7? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+6)%(users.length)]}/>}
-                {users.length<2? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+1)%(users.length)]}/>}
-                {users.length<3? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+2)%(users.length)]}/>}
-                {users.length<4? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+3)%(users.length)]}/>}
-                {users.length<8? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+7)%(users.length)]}/>}
+                {users.current.length<7? <DeceptionUser user={null}/> : <DeceptionUser user={users.current[(userIndex.current+6)%(users.current.length)]}/>}
+                {users.current.length<2? <DeceptionUser user={null}/> : <DeceptionUser user={users.current[(userIndex.current+1)%(users.current.length)]}/>}
+                {users.current.length<3? <DeceptionUser user={null}/> : <DeceptionUser user={users.current[(userIndex.current+2)%(users.current.length)]}/>}
+                {users.current.length<4? <DeceptionUser user={null}/> : <DeceptionUser user={users.current[(userIndex.current+3)%(users.current.length)]}/>}
+                {users.current.length<8? <DeceptionUser user={null}/> : <DeceptionUser user={users.current[(userIndex.current+7)%(users.current.length)]}/>}
               </div>
               <div className='middle' style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
-                {users.length<5? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+4)%(users.length)]}/>}
+                {users.current.length<5? <DeceptionUser user={null}/> : <DeceptionUser user={users.current[(userIndex.current+4)%(users.current.length)]}/>}
                 <div style={{width: "800px", height: "250px", margin: "0px 55px", display: "flex", justifyContent: "center", alignItems: "center"}}>
                   <div style={{width: "110px", height: "230px", margin: "10px 10px 10px 0px", position: "relative"}}>
                     <img src={require(`../img/사인.png`)} alt="사인" width="130px" height="230px"/>
@@ -274,14 +280,14 @@ function Deception(props) {
                     <img src={require(`../img/x.png`)} style={{position: "absolute", width: "15px", height: "15px", left: "25px", top: `${40+hint[hintIndex[3]].content.indexOf(godChoice.godHint[3].content)*33.5}px`}} />
                   </div>
                 </div>
-                {users.length<6? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+5)%(users.length)]}/>}
+                {users.current.length<6? <DeceptionUser user={null}/> : <DeceptionUser user={users.current[(userIndex.current+5)%(users.current.length)]}/>}
               </div>
               <div className='bottom' style={{display: "flex"}}>
-                {users.length<9? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+8)%(users.length)]}/>}
-                {users.length<11? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+10)%(users.length)]}/>}
-                <DeceptionUser user={users[userIndex]}/>
-                {users.length<12? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+11)%(users.length)]}/>}
-                {users.length<10? <DeceptionUser user={null}/> : <DeceptionUser user={users[(userIndex+9)%(users.length)]}/>}
+                {users.current.length<9? <DeceptionUser user={null}/> : <DeceptionUser user={users.current[(userIndex.current+8)%(users.current.length)]}/>}
+                {users.current.length<11? <DeceptionUser user={null}/> : <DeceptionUser user={users.current[(userIndex.current+10)%(users.current.length)]}/>}
+                <DeceptionUser user={users.current[userIndex.current]}/>
+                {users.current.length<12? <DeceptionUser user={null}/> : <DeceptionUser user={users.current[(userIndex.current+11)%(users.current.length)]}/>}
+                {users.current.length<10? <DeceptionUser user={null}/> : <DeceptionUser user={users.current[(userIndex.current+9)%(users.current.length)]}/>}
               </div>
             </div>
           </div>

@@ -415,6 +415,9 @@ module.exports = (server) => {
                 socket.broadcast.to(room).emit('deceptionJoin',{
                     deception_player
                 })
+                socket.broadcast.to(room).emit('deceptionJoin',{
+                    deception_player
+                })
                 console.log("서버에서 보냈당")
             }
             else{
