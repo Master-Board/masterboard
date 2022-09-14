@@ -67,6 +67,7 @@ function Deception(props) {
 
   // 입장
   useEffect(() => {
+    console.log(roomNumber, props.user.id)
     socket.emit("deceptionJoin", {room: roomNumber, name: props.user.id});
   }, [room])
 
@@ -85,7 +86,7 @@ function Deception(props) {
         }
       }
     })
-  }, [])
+  })
 
   // 메세지 받기
   useEffect(() => {
