@@ -12,7 +12,6 @@ function Deception(props) {
   const { roomNumber } = useParams();
   const [user, setUser] = useState(props.user.id);
   const [room, setRoom] = useState(roomNumber);
-  const [myJob, setMyJob] = useState('');
   const [chatting, setChatting] = useState(false);
   const [message, setMessage] = useState('');
   const [text, setText] = useState('');
@@ -29,8 +28,10 @@ function Deception(props) {
   const [hintIndex, setHintIndex] = useState([0, 0, 0, 0])
   const users = useRef({})
   const userIndex = useRef(-1)
+  const myJob = useRef('수사관')
   const [, updateState] = useState();
   const forceUpdate = useCallback(() => updateState({}), [])
+  
 
   const cause = ['질식', '중상', '과다출혈', '질병', '독살', '사고사']
   const place = [['놀이터', '교실', '기숙사', '구내식당', '엘리베이터', '공중화장실'], ['거실', '침실', '창고', '화장실', '부엌', '발코니'], ['별장', '공원', '슈퍼마켓', '학교', '숲속', '은행'], ['호프집', '서점', '식당', '호텔', '병원', '건설 현장']]
@@ -67,7 +68,6 @@ function Deception(props) {
 
   // 입장
   useEffect(() => {
-    console.log(roomNumber, props.user.id)
     socket.emit("deceptionJoin", {room: roomNumber, name: props.user.id});
   }, [room])
 
@@ -187,30 +187,22 @@ function Deception(props) {
     setBroadcast("준비완료!")
   }
 
+  const godChoiceFunc = () => {
+    setBroadcast("누군가 살인을 했습니다! 법의학자가 선택을 완료할때까지 기다려주세요.")
+      if(myJob.current == '법의학자'){
+        handleShowGodChoose()
+      }
+  }
+
   const startGame = async () => {
     console.log("게임시작")
     setBroadcast("게임이 시작되었습니다.")
-    console.log(users)
-    console.log(userIndex.current)
-    console.log(users.current[userIndex.current])
-    console.log(users.current[userIndex.current].job)
-    setMyJob(users.current[userIndex.current].job);
-    setMyJob('살인자');
-    console.log(myJob)
+    myJob.current = users.current[userIndex.current].job
+    setBroadcast(`당신은 ${myJob.current}입니다. 살인자가 선택을 완료할때까지 기다려주세요.`)
 
-    //직업 정하기
-    // 법의학자 god 살인자 murderer 목격자 witness 공범자 confederate
-    // setTimeout(function(){ setBroadcast(`당신은 ${myJob}입니다. 살인자가 선택을 완료할때까지 기다려주세요.`) }, 2000)
-    setBroadcast(`당신은 ${myJob}입니다. 살인자가 선택을 완료할때까지 기다려주세요.`)
-
-    if(myJob == '살인자'){ 
-      setTimeout(function(){ handleShowMurdererChoose() }, 4000)
-      await socket.emit("deceptionMurdererChoice", {answer})
-      setBroadcast("누군가 살인을 했습니다! 법의학자가 선택을 완료할때까지 기다려주세요.")
-      if(myJob == '법의학자'){
-        handleShowGodChoose()
-        await socket.emit("deceptionGodChoice", {godChoice})
-      }
+    if(myJob.current == '살인자'){ 
+      handleShowMurdererChoose()
+      // setTimeout(function(){ handleShowMurdererChoose() }, 4000)
     }
   }
 
@@ -293,7 +285,7 @@ function Deception(props) {
             </div>
           </div>
           <GodChooseModal showGodChoose={showGodChoose} handleCloseGodChoose={handleCloseGodChoose} hint={hint} godChoice={godChoice} setGodChoice={setGodChoice} socket={socket} />
-          <MurdererChooseModal showMurdererChoose={showMurdererChoose} handleCloseMurdererChoose={handleCloseMurdererChoose} user={users[userIndex]} answer={answer} setAnswer={setAnswer} socket={socket} room={room} />
+          <MurdererChooseModal showMurdererChoose={showMurdererChoose} handleCloseMurdererChoose={handleCloseMurdererChoose} user={users.current[userIndex.current]} answer={answer} setAnswer={setAnswer} godChoiceFunc={godChoiceFunc} socket={socket} room={room} />
         </div>
       </div>
     );

@@ -85,6 +85,7 @@ function MurdererChooseModal(props) {
           <Button variant="primary" onClick={() => {
             console.log(props.answer)
             props.socket.emit("deceptionMurdererChoice", {room: props.room, means: props.answer.means, clue: props.answer.clue})
+            props.godChoiceFunc()
             props.handleCloseMurdererChoose()
         }}>
             완료

@@ -29,7 +29,6 @@ function GodChooseModal(props) {
         
     useEffect(() => {
       setHintArrayIndex(ranNum(props.hint.length, 4))
-      console.log(hintArrayIndex)
     }, [])
 
   return (
@@ -247,7 +246,7 @@ function GodChooseModal(props) {
         <Modal.Footer>
           <Button variant="primary" onClick={() => {
             console.log(props.godChoice)
-            props.socket.emit("deceptionGodChoice", {})
+            props.socket.emit("deceptionGodChoice", {room: props.room, godChoice: props.godChoice})
             props.handleCloseGodChoose()
           }}>
             완료
