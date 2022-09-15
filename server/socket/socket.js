@@ -9,6 +9,7 @@ var deception_murderer //살인자 플레이어 닉네임 혹은 번호
 var deception_murder_means // 살인자 수단카드 번호
 var deception_murder_clue //살인자 단서카드 번호
 var deception_info = []
+var deception_role_decided = false
 // let deception_info = [{room:0}, {deception_player: []} ,{deception_clue_deck}, {deception_means_deck}, 
 // {deception_clue},{deception_means},{deception_murderer}, {deception_murder_means}, {deception_murder_clue}]
 function deception_init_clueinfo(){//단서카드 정보 return
@@ -308,7 +309,7 @@ module.exports = (server) => {
                     deception_player.splice(i,1)
                     socket.leave(room)
                     socket.emit('disconnect',deception_player)
-                    console.log(room+'번 방 leave 완료!')
+                    console.log(deception_player[i].name,'님, ',room+'번 방 leave 완료!')
                 }
             }
             clearInterval(socket.interval);
@@ -347,7 +348,6 @@ module.exports = (server) => {
     
         socket.on('deceptionJoin',(data) => {
             let {room, name} = data
-            let flag = false
             //let card_count = 4
             console.log('data: ',data)
             let player_form = {name: name, ready: false, job: '수사관', clue: [], means: [], socketid: socket.id}
@@ -355,11 +355,8 @@ module.exports = (server) => {
                 socket.join(room)
 
                 console.log(room+'번 방 join 완료!')
-
-                for(let i = 0 ; i < deception_player.length; i++){
-                    if(deception_player[i].name == name) flag = true
-                }
-                if(flag == false) deception_player.push(player_form)
+                
+                deception_player.push(player_form)
                 //가상으로 인원 설정 test
 
                 // player_form = {name: '형진', ready: false, job: 'detective', clue: [], means: []}
@@ -411,14 +408,12 @@ module.exports = (server) => {
                 // start의 덱 설정 test
 
                 console.log('플레이어: ',deception_player)
-
                 socket.broadcast.to(room).emit('deceptionJoin',{
                     deception_player
                 })
                 socket.emit('deceptionJoin',{
                     deception_player
                 })
-                console.log("서버에서 보냈당")
             }
             else{
                 console.log('value is empty!')
@@ -491,7 +486,11 @@ module.exports = (server) => {
             deception_clue = init_deck[2]
             deception_means = init_deck[3]             
             //직업정하기
-            deception_player = deception_decide_role(personnel,deception_player)
+            if(deception_role_decided == false) {
+                deception_player = deception_decide_role(personnel,deception_player)
+                deception_role_decided = true
+            }
+            
             //카드뽑기
             for(let i=0;i<personnel;i++) {
                 let drawn_card = deception_draw_card(deception_clue_deck,deception_means_deck,deception_clue,deception_means,card_count)
