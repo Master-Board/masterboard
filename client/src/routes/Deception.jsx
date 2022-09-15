@@ -114,11 +114,9 @@ function Deception(props) {
   useEffect(() => {
     socket.on("deceptionStart", (data) => {
       users.current = data.deception_player
-      console.log(users)
       for(let i = 0; i < users.current.length; i++){
         if(users.current[i].name == user) {
           userIndex.current = i
-          console.log(userIndex)
           forceUpdate()
           break
         }
