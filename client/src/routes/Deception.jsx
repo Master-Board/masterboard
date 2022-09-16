@@ -26,6 +26,7 @@ function Deception(props) {
   const [showMurdererChoose, setShowMurdererChoose] = useState(false);
   const [placeIndex, setPlaceIndex] = useState(0);
   const [hintIndex, setHintIndex] = useState([0, 0, 0, 0])
+  const [gameAnswer, setGameAnswer] = useState({user: null, means: null, clue: null})
   const users = useRef({})
   const userIndex = useRef(-1)
   const myJob = useRef('수사관')
@@ -147,7 +148,19 @@ function Deception(props) {
         }
       }
     })
-  }, [godChoice, godChoice.godPlace, godChoice.godHint, placeIndex, hintIndex])
+  }, [])
+
+  useEffect(() => {
+    socket.on("deceptionMurdererChoice", (data) => {
+      let copy = gameAnswer;
+      copy.user = data.user
+      copy.means = data.means
+      copy.clue = data.clue
+      setGameAnswer(copy)
+      console.log(gameAnswer)
+      godChoiceFunc()
+    })
+  }, [])
 
   // 타이머
   useEffect(() => {

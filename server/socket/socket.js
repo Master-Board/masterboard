@@ -513,7 +513,7 @@ module.exports = (server) => {
         })
     
         socket.on('deceptionGodChoice',(data)=>{ 
-            const{room} = data.room
+            const{room} = data
             socket.to(room).emit('deceptionGodChoice',{
                 data
             })
