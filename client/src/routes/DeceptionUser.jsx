@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react'
 function DeceptionUser(props) {
 
     const [btnClick, setBtnClick] = useState([false, false, false, false, false, false, false, false]);
-    console.log(props.user)
 
   return props.user == null ? 
     (<div style={{width: "270px", height: " 180px", margin: "20px 17px"}}>

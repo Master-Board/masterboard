@@ -75,13 +75,10 @@ function Deception(props) {
   // 레디전 유저정보 받기
   useEffect(() => {
     socket.on("deceptionJoin", (data) => {
-      console.log(data.deception_player)
       users.current = data.deception_player
-      console.log(users.current.length)
       for(let i = 0; i < users.current.length; i++){
         if(users.current[i].name == user) {
           userIndex.current = i
-          console.log(userIndex.current)
           forceUpdate()
           break
         }
@@ -129,7 +126,9 @@ function Deception(props) {
   // 가운데에 정보 업데이트
   useEffect(() => {
     socket.on("deceptionGodChoice", (data) => {
-      setGodChoice(data)
+      console.log(data)
+      setGodChoice(data.data)
+      console.log(godChoice)
       // 장소
       for(let i = 0; i < place.length; i++){
         if(place[i].includes(godChoice.godPlace)){
@@ -147,17 +146,18 @@ function Deception(props) {
           }
         }
       }
+      setBroadcast("낮이 되었습니다. 살인사건을 추리하세요!")
     })
   }, [])
 
   useEffect(() => {
     socket.on("deceptionMurdererChoice", (data) => {
       let copy = gameAnswer;
-      copy.user = data.user
-      copy.means = data.means
-      copy.clue = data.clue
+      copy.user = data.data.user.name
+      copy.means = data.data.means
+      copy.clue = data.data.clue
       setGameAnswer(copy)
-      console.log(gameAnswer)
+      console.log("답 받았다")
       godChoiceFunc()
     })
   }, [])
