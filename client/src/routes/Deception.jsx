@@ -21,7 +21,6 @@ function Deception(props) {
   const [seconds, setSeconds] = useState(0)
   const [timer, setTimer] = useState(false)
   const [answer, setAnswer] = useState({means: '', clue: ''});
-  const [godChoice, setGodChoice] = useState({godCause: '', godPlace: '', godHint: [{title: '', content: ''}, {title: '', content: ''}, {title: '', content: ''}, {title: '', content: ''}]});
   const [showGodChoose, setShowGodChoose] = useState(false);
   const [showMurdererChoose, setShowMurdererChoose] = useState(false);
   const [placeIndex, setPlaceIndex] = useState(0);
@@ -30,6 +29,7 @@ function Deception(props) {
   const users = useRef({})
   const userIndex = useRef(-1)
   const myJob = useRef('수사관')
+  const godChoice = useRef({godCause: '', godPlace: '', godHint: [{title: '', content: ''}, {title: '', content: ''}, {title: '', content: ''}, {title: '', content: ''}]})
   const [, updateState] = useState();
   const forceUpdate = useCallback(() => updateState({}), [])
   
@@ -126,27 +126,27 @@ function Deception(props) {
   // 가운데에 정보 업데이트
   useEffect(() => {
     socket.on("deceptionGodChoice", (data) => {
-      console.log(data)
-      setGodChoice(data.data)
-      console.log(godChoice)
+      godChoice.current = data.data.godChoice.current
       // 장소
       for(let i = 0; i < place.length; i++){
-        if(place[i].includes(godChoice.godPlace)){
+        if(place[i].includes(godChoice.current.godPlace)){
           setPlaceIndex(i)
         }
       }
       // 현장
       for(let i = 0; i < 4; i++){
         for(let j = 0; j < hint.length; j++){
-          if(hint[j].title == godChoice.godHint[i].title){
+          if(hint[j].title == godChoice.current.godHint[i].title){
             let copy = hintIndex;
             copy[i] = j;
             setHintIndex(copy);
-            console.log(hintIndex)
+            break;
           }
         }
       }
+      forceUpdate()
       setBroadcast("낮이 되었습니다. 살인사건을 추리하세요!")
+      firstDaytime()
     })
   }, [])
 
@@ -157,8 +157,16 @@ function Deception(props) {
       copy.means = data.data.means
       copy.clue = data.data.clue
       setGameAnswer(copy)
-      console.log("답 받았다")
+      console.log(gameAnswer)
       godChoiceFunc()
+    })
+  }, [])
+
+  useEffect(() => {
+    socket.on("deceptionTime", (data) => {
+      console.log(data)
+      setMinutes(data.minutes)
+      setSeconds(data.seconds)
     })
   }, [])
 
@@ -196,6 +204,10 @@ function Deception(props) {
   const ready = () => {
     socket.emit("deceptionReady", {user: user, room: room})
     setBroadcast("준비완료!")
+  }
+
+  const firstDaytime = () => {
+    socket.emit("deceptionTime", {room: room, minutes: 0, seconds: 10})
   }
 
   const godChoiceFunc = () => {
@@ -261,27 +273,27 @@ function Deception(props) {
                 <div style={{width: "800px", height: "250px", margin: "0px 55px", display: "flex", justifyContent: "center", alignItems: "center"}}>
                   <div style={{width: "110px", height: "230px", margin: "10px 10px 10px 0px", position: "relative"}}>
                     <img src={require(`../img/사인.png`)} alt="사인" width="130px" height="230px"/>
-                    <img src={require(`../img/x.png`)} style={{position: "absolute", width: "15px", height: "15px", left: "25px", top: `${40+cause.indexOf(godChoice.godCause)*33.5}px`}} />
+                    <img src={require(`../img/x.png`)} style={{position: "absolute", width: "15px", height: "15px", left: "25px", top: `${40+cause.indexOf(godChoice.current.godCause)*33.5}px`}} />
                   </div>
                   <div style={{width: "110px", height: "230px", margin: "10px 10px", position: "relative"}}>
                     <img src={require(`../img/장소${placeIndex}.png`)} alt="장소" width="130px" height="230px"/>
-                    <img src={require(`../img/x.png`)} style={{position: "absolute", width: "15px", height: "15px", left: "25px", top: `${40+place[placeIndex].indexOf(godChoice.godPlace)*33.5}px`}} />
+                    <img src={require(`../img/x.png`)} style={{position: "absolute", width: "15px", height: "15px", left: "25px", top: `${40+place[placeIndex].indexOf(godChoice.current.godPlace)*33.5}px`}} />
                   </div>
                   <div style={{width: "110px", height: "230px", margin: "10px 10px", position: "relative"}}>
                     <img src={require(`../img/현장${hintIndex[0]}.png`)} alt="현장" width="130px" height="230px"/>
-                    <img src={require(`../img/x.png`)} style={{position: "absolute", width: "15px", height: "15px", left: "25px", top: `${40+hint[hintIndex[0]].content.indexOf(godChoice.godHint[0].content)*33.5}px`}} />
+                    <img src={require(`../img/x.png`)} style={{position: "absolute", width: "15px", height: "15px", left: "25px", top: `${40+hint[hintIndex[0]].content.indexOf(godChoice.current.godHint[0].content)*33.5}px`}} />
                   </div>
                   <div style={{width: "110px", height: "230px", margin: "10px 10px", position: "relative"}}>
                     <img src={require(`../img/현장${hintIndex[1]}.png`)} alt="현장" width="130px" height="230px"/>
-                    <img src={require(`../img/x.png`)} style={{position: "absolute", width: "15px", height: "15px", left: "25px", top: `${40+hint[hintIndex[1]].content.indexOf(godChoice.godHint[1].content)*33.5}px`}} />
+                    <img src={require(`../img/x.png`)} style={{position: "absolute", width: "15px", height: "15px", left: "25px", top: `${40+hint[hintIndex[1]].content.indexOf(godChoice.current.godHint[1].content)*33.5}px`}} />
                   </div>
                   <div style={{width: "110px", height: "230px", margin: "10px 10px", position: "relative"}}>
                     <img src={require(`../img/현장${hintIndex[2]}.png`)} alt="현장" width="130px" height="230px"/>
-                    <img src={require(`../img/x.png`)} style={{position: "absolute", width: "15px", height: "15px", left: "25px", top: `${40+hint[hintIndex[2]].content.indexOf(godChoice.godHint[2].content)*33.5}px`}} />
+                    <img src={require(`../img/x.png`)} style={{position: "absolute", width: "15px", height: "15px", left: "25px", top: `${40+hint[hintIndex[2]].content.indexOf(godChoice.current.godHint[2].content)*33.5}px`}} />
                   </div>
                   <div style={{width: "110px", height: "230px", margin: "10px 10px", position: "relative"}}>
                     <img src={require(`../img/현장${hintIndex[3]}.png`)} alt="현장" width="130px" height="230px"/>
-                    <img src={require(`../img/x.png`)} style={{position: "absolute", width: "15px", height: "15px", left: "25px", top: `${40+hint[hintIndex[3]].content.indexOf(godChoice.godHint[3].content)*33.5}px`}} />
+                    <img src={require(`../img/x.png`)} style={{position: "absolute", width: "15px", height: "15px", left: "25px", top: `${40+hint[hintIndex[3]].content.indexOf(godChoice.current.godHint[3].content)*33.5}px`}} />
                   </div>
                 </div>
                 {users.current.length<6? <DeceptionUser user={null}/> : <DeceptionUser user={users.current[(userIndex.current+5)%(users.current.length)]}/>}
@@ -295,7 +307,7 @@ function Deception(props) {
               </div>
             </div>
           </div>
-          <GodChooseModal showGodChoose={showGodChoose} handleCloseGodChoose={handleCloseGodChoose} hint={hint} godChoice={godChoice} setGodChoice={setGodChoice} socket={socket} />
+          <GodChooseModal showGodChoose={showGodChoose} handleCloseGodChoose={handleCloseGodChoose} hint={hint} godChoice={godChoice} socket={socket} room={room} />
           <MurdererChooseModal showMurdererChoose={showMurdererChoose} handleCloseMurdererChoose={handleCloseMurdererChoose} user={users.current[userIndex.current]} answer={answer} setAnswer={setAnswer} godChoiceFunc={godChoiceFunc} socket={socket} room={room} />
         </div>
       </div>

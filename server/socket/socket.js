@@ -513,8 +513,12 @@ module.exports = (server) => {
         })
     
         socket.on('deceptionGodChoice',(data)=>{ 
+            console.log(data)
             const room = data.room
             socket.to(room).emit('deceptionGodChoice',{
+                data
+            })
+            socket.emit('deceptionGodChoice', {
                 data
             })
         })
