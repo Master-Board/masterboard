@@ -510,6 +510,9 @@ module.exports = (server) => {
             socket.to(room).emit('deceptionMurdererChoice',{
                 data
             })
+            socket.emit('deceptionMurdererChoice'){
+                data
+            }
         })
     
         socket.on('deceptionGodChoice',(data)=>{ 
@@ -525,9 +528,10 @@ module.exports = (server) => {
     
 
         socket.on('deceptionTime',(data)=>{ //시간 증감 고민중.
-            const{room, time} = data
+            const{room, minutes, seconds} = data
             socket.to(room).emit('deceptionTime', {
-                time
+                minutes,
+                seconds
             })
         })
     

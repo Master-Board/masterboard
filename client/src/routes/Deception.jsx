@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import io from "socket.io-client";
 import DeceptionUser from './DeceptionUser';
 import GodChooseModal from './GodChooseModal';
+import SecondGodChooseModal from './SecondGodChooseModal';
 import MurdererChooseModal from './MurdererChooseModal';
 
 let socket;
@@ -22,13 +23,16 @@ function Deception(props) {
   const [timer, setTimer] = useState(false)
   const [answer, setAnswer] = useState({means: '', clue: ''});
   const [showGodChoose, setShowGodChoose] = useState(false);
+  const [showSecondGodChoose, setShowSecondGodChoose] = useState(false);
   const [showMurdererChoose, setShowMurdererChoose] = useState(false);
   const [placeIndex, setPlaceIndex] = useState(0);
   const [hintIndex, setHintIndex] = useState([0, 0, 0, 0])
+  const [hintTitle, setHintTitle] = useState(['', '', '', ''])
   const [gameAnswer, setGameAnswer] = useState({user: null, means: null, clue: null})
   const users = useRef({})
   const userIndex = useRef(-1)
   const myJob = useRef('수사관')
+  const day = useRef(0)
   const godChoice = useRef({godCause: '', godPlace: '', godHint: [{title: '', content: ''}, {title: '', content: ''}, {title: '', content: ''}, {title: '', content: ''}]})
   const [, updateState] = useState();
   const forceUpdate = useCallback(() => updateState({}), [])
@@ -59,6 +63,8 @@ function Deception(props) {
   
   const handleCloseGodChoose = () => setShowGodChoose(false);
   const handleShowGodChoose = () => setShowGodChoose(true);
+  const handleCloseSecondGodChoose = () => setShowSecondGodChoose(false);
+  const handleShowSecondGodChoose = () => setShowSecondGodChoose(true);
   const handleCloseMurdererChoose = () => setShowMurdererChoose(false);
   const handleShowMurdererChoose = () => setShowMurdererChoose(true);
 
@@ -137,16 +143,20 @@ function Deception(props) {
       for(let i = 0; i < 4; i++){
         for(let j = 0; j < hint.length; j++){
           if(hint[j].title == godChoice.current.godHint[i].title){
-            let copy = hintIndex;
-            copy[i] = j;
-            setHintIndex(copy);
+            let indexCopy = hintIndex;
+            let titleCopy = hintTitle;
+            indexCopy[i] = j;
+            titleCopy[i] = hint[indexCopy[i]].title;
+            setHintIndex(indexCopy);
+            setHintTitle(titleCopy);
             break;
           }
         }
       }
       forceUpdate()
-      setBroadcast("낮이 되었습니다. 살인사건을 추리하세요!")
-      firstDaytime()
+      if(day.current == 0) firstDaytime()
+      else if(day.current == 1) 
+      
     })
   }, [])
 
@@ -164,7 +174,6 @@ function Deception(props) {
 
   useEffect(() => {
     socket.on("deceptionTime", (data) => {
-      console.log(data)
       setMinutes(data.minutes)
       setSeconds(data.seconds)
     })
@@ -178,6 +187,17 @@ function Deception(props) {
       }
       if(parseInt(seconds) === 0) {
         if(parseInt(minutes) === 0) {
+          if(day.current == 1){
+            setBroadcast("첫째날 밤이 되었습니다. 법의학자는 힌트를 변경해주세요.")
+            if(myJob.current == '법의학자'){
+              handleShowSecondGodChoose()
+            }
+          }else if(day.current == 1){
+            setBroadcast("둘째날 밤이 되었습니다. 법의학자는 힌트를 변경해주세요.")
+            if(myJob.current == '법의학자'){
+              handleShowThirdGodChoose()
+            }
+          }
           clearInterval(countdown)
         }else{
           setMinutes(parseInt(minutes) - 1)
@@ -207,6 +227,14 @@ function Deception(props) {
   }
 
   const firstDaytime = () => {
+    setBroadcast("첫번째 낮이 되었습니다. 살인사건을 추리하세요!")
+    day.current = 1
+    socket.emit("deceptionTime", {room: room, minutes: 0, seconds: 10})
+  }
+
+  const secondDaytime = () => {
+    setBroadcast("두번째 낮이 되었습니다. 살인사건을 추리하세요!")
+    day.current = 2
     socket.emit("deceptionTime", {room: room, minutes: 0, seconds: 10})
   }
 
@@ -308,6 +336,7 @@ function Deception(props) {
             </div>
           </div>
           <GodChooseModal showGodChoose={showGodChoose} handleCloseGodChoose={handleCloseGodChoose} hint={hint} godChoice={godChoice} socket={socket} room={room} />
+          <SecondGodChooseModal showSecondGodChoose={showSecondGodChoose} handleCloseSecondGodChoose={handleCloseSecondGodChoose} hint={hint} hintTitle={hintTitle} godChoice={godChoice} socket={socket} room={room} />
           <MurdererChooseModal showMurdererChoose={showMurdererChoose} handleCloseMurdererChoose={handleCloseMurdererChoose} user={users.current[userIndex.current]} answer={answer} setAnswer={setAnswer} godChoiceFunc={godChoiceFunc} socket={socket} room={room} />
         </div>
       </div>

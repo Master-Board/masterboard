@@ -195,7 +195,6 @@ function GodChooseModal(props) {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={() => {
-            console.log(props.godChoice)
             props.socket.emit("deceptionGodChoice", {room: props.room, godChoice: props.godChoice})
             props.handleCloseGodChoose()
           }}>
